@@ -1,0 +1,29 @@
+{
+  "name": "glob-watcher",
+  "description": "Watch globs",
+  "version": "0.0.0",
+  "homepage": "http://github.com/wearefractal/glob-watcher",
+  "repository": "git://github.com/wearefractal/glob-watcher.git",
+  "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
+  "main": "./index.js",
+  "dependencies": {
+    "gaze": "~0.4.3"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*",
+    "rimraf": "~2.2.5"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "engines": {
+    "node": ">= 0.4.0"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/wearefractal/glob-watcher/raw/master/LICENSE"
+    }
+  ]
+}
