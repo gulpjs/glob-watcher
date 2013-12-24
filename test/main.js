@@ -30,7 +30,7 @@ describe('glob-watcher', function() {
     }, 125);
   });
 
-  it('should return a valid file struct via vallback', function(done) {
+  it('should return a valid file struct via callback', function(done) {
     var expectedName = join(__dirname, "./fixtures/stuff/test.coffee");
     var fname = join(__dirname, "./fixtures/**/test.coffee");
     fs.writeFileSync(expectedName, "testing");
@@ -51,5 +51,24 @@ describe('glob-watcher', function() {
     setTimeout(function(){
       fs.writeFileSync(expectedName, "test test");
     }, 200);
+  });
+
+  it('should not return a non-matching file struct via callback', function(done) {
+    var expectedName = join(__dirname, "./fixtures/test123.coffee");
+    var fname = join(__dirname, "./fixtures/**/test.coffee");
+    fs.writeFileSync(expectedName, "testing");
+
+    var watcher = watch(fname, function(evt) {
+      throw new Error("Should not have been called! "+evt.path);
+    });
+
+    setTimeout(function(){
+      fs.writeFileSync(expectedName, "test test");
+    }, 200);
+
+    setTimeout(function(){
+      rimraf.sync(expectedName);
+      done();
+    }, 1500);
   });
 });
