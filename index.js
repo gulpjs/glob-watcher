@@ -1,10 +1,15 @@
 var gaze = require('gaze');
 var EventEmitter = require('events').EventEmitter;
 
-module.exports = function(glob, cb) {
+module.exports = function(glob, opts, cb) {
   var out = new EventEmitter();
 
-  var watcher = gaze(glob, function(err, rwatcher){
+  if (typeof opts === 'function') {
+    cb = opts;
+    opts = {};
+  }
+
+  var watcher = gaze(glob, opts, function(err, rwatcher){
     rwatcher.on('all', function(evt, path, old){
       var outEvt = {type: evt, path: path};
       if(old) outEvt.old = old;
