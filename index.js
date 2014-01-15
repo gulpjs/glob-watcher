@@ -29,7 +29,7 @@ module.exports = function(glob, opts, cb) {
     return watcher.watched();
   };
   out.add = function(){
-    return watcher.add.call(watcher, arguments);
+    return watcher.add.apply(watcher, arguments); 
   };
   out.remove = function(){
     return watcher.remove();
