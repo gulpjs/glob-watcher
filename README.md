@@ -28,7 +28,7 @@ watch(["./*.js", "!./something.js"], function(evt){
 
 // EE interface
 var watcher = watch(["./*.js", "!./something.js"]);
-watcher.on('changed', function(evt) {
+watcher.on('change', function(evt) {
   // evt has what file changed and all that jazz
 });
 
