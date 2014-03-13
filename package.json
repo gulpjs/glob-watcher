@@ -7,16 +7,16 @@
   "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
   "main": "./index.js",
   "dependencies": {
-    "gaze": "~0.4.3"
+    "gaze": "^0.5.0"
   },
   "devDependencies": {
-    "mocha": "~1.17.0",
-    "should": "~2.1.1",
+    "mocha": "^1.17.0",
+    "should": "^2.1.1",
     "mocha-lcov-reporter": "0.0.1",
-    "coveralls": "~2.6.1",
-    "istanbul": "~0.2.3",
-    "rimraf": "~2.2.5",
-    "jshint": "~2.4.1"
+    "coveralls": "^2.6.1",
+    "istanbul": "^0.2.3",
+    "rimraf": "^2.2.5",
+    "jshint": "^2.4.1"
   },
   "scripts": {
     "test": "mocha --reporter spec && jshint",
