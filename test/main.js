@@ -1,15 +1,17 @@
 var watch = require('../');
 var should = require('should');
-var join = require('path').join;
+var path = require('path');
 var fs = require('fs');
 var rimraf = require('rimraf');
+var mkdirp = require('mkdirp');
 
 require('mocha');
 
 describe('glob-watcher', function() {
   it('should return a valid file struct via EE', function(done) {
-    var expectedName = join(__dirname, "./fixtures/stuff/temp.coffee");
-    var fname = join(__dirname, "./fixtures/**/temp.coffee");
+    var expectedName = path.join(__dirname, "./fixtures/stuff/temp.coffee");
+    var fname = path.join(__dirname, "./fixtures/**/temp.coffee");
+    mkdirp.sync(path.dirname(expectedName));
     fs.writeFileSync(expectedName, "testing");
 
     var watcher = watch(fname);
@@ -31,7 +33,7 @@ describe('glob-watcher', function() {
   });
 
   it('should emit nomatch via EE', function(done) {
-    var fname = join(__dirname, "./doesnt_exist_lol/temp.coffee");
+    var fname = path.join(__dirname, "./doesnt_exist_lol/temp.coffee");
 
     var watcher = watch(fname);
     watcher.on('nomatch', function() {
@@ -40,8 +42,9 @@ describe('glob-watcher', function() {
   });
 
   it('should return a valid file struct via callback', function(done) {
-    var expectedName = join(__dirname, "./fixtures/stuff/test.coffee");
-    var fname = join(__dirname, "./fixtures/**/test.coffee");
+    var expectedName = path.join(__dirname, "./fixtures/stuff/test.coffee");
+    var fname = path.join(__dirname, "./fixtures/**/test.coffee");
+    mkdirp.sync(path.dirname(expectedName));
     fs.writeFileSync(expectedName, "testing");
 
     var watcher = watch(fname, function(evt) {
@@ -63,8 +66,9 @@ describe('glob-watcher', function() {
   });
 
   it('should not return a non-matching file struct via callback', function(done) {
-    var expectedName = join(__dirname, "./fixtures/test123.coffee");
-    var fname = join(__dirname, "./fixtures/**/test.coffee");
+    var expectedName = path.join(__dirname, "./fixtures/test123.coffee");
+    var fname = path.join(__dirname, "./fixtures/**/test.coffee");
+    mkdirp.sync(path.dirname(expectedName));
     fs.writeFileSync(expectedName, "testing");
 
     var watcher = watch(fname, function(evt) {

@@ -10,6 +10,7 @@ module.exports = function(glob, opts, cb) {
   }
 
   var watcher = gaze(glob, opts, function(err, rwatcher){
+    if (err) out.emit('error', err);
     rwatcher.on('all', function(evt, path, old){
       var outEvt = {type: evt, path: path};
       if(old) outEvt.old = old;
@@ -26,9 +27,7 @@ module.exports = function(glob, opts, cb) {
   out.end = function(){
     return watcher.close();
   };
-  out.files = function(){
-    return watcher.watched();
-  };
+  out.files = watcher.watched;
   out.add = function(){
     return watcher.add.apply(watcher, arguments);
   };
