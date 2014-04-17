@@ -7,7 +7,7 @@
   "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
   "main": "./index.js",
   "dependencies": {
-    "gaze": "^0.6.2"
+    "gaze": "^0.5.1"
   },
   "devDependencies": {
     "mocha": "^1.17.0",
