@@ -3,7 +3,7 @@
 ## Information
 
 <table>
-<tr> 
+<tr>
 <td>Package</td><td>glob-watcher</td>
 </tr>
 <tr>
@@ -12,7 +12,7 @@
 </tr>
 <tr>
 <td>Node Version</td>
-<td>>= 0.9</td>
+<td>>= 0.10</td>
 </tr>
 </table>
 
@@ -22,18 +22,22 @@
 var watch = require('glob-watcher');
 
 // callback interface
-watch(["./*.js", "!./something.js"], function(evt){
-  // evt has what file changed and all that jazz
+watch(['./*.js', '!./something.js'], function(){
+  // this function will be called each time a globbed
+  // file is changed
+
+  // if you need access to the `evt` object, listen
+  // for the `change` event (see below)
 });
 
 // EE interface
-var watcher = watch(["./*.js", "!./something.js"]);
+var watcher = watch(['./*.js', '!./something.js']);
 watcher.on('change', function(evt) {
   // evt has what file changed and all that jazz
 });
 
 // add files after it has been created
-watcher.add("./somefolder/somefile.js");
+watcher.add('./somefolder/somefile.js');
 ```
 
 
