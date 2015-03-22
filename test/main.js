@@ -45,14 +45,14 @@ describe('glob-watcher', function() {
     });
   });
 
-  it('should not pass a file struct via callback', function(done) {
+  it('should not pass any args via callback', function(done) {
     var expectedName = path.join(__dirname, './fixtures/stuff/test.coffee');
     var fname = path.join(__dirname, './fixtures/**/test.coffee');
     mkdirp.sync(path.dirname(expectedName));
     fs.writeFileSync(expectedName, 'testing');
 
-    var watcher = watch(fname, function(evt) {
-      should.not.exist(evt);
+    var watcher = watch(fname, function() {
+      arguments.length.should.equal(0);
       watcher.end();
     });
 
