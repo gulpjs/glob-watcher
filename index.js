@@ -15,7 +15,7 @@ module.exports = function(glob, opts, cb) {
       var outEvt = {type: evt, path: path};
       if(old) outEvt.old = old;
       out.emit('change', outEvt);
-      if(cb) cb(outEvt);
+      if(cb) cb();
     });
   });
 
