@@ -38,6 +38,15 @@ watcher.on('change', function(evt) {
 
 // add files after it has been created
 watcher.add('./somefolder/somefile.js');
+
+// stop watching certain files
+watcher.remove('./somefolder/dontcare.*');
+
+// stop watching entirely
+watcher.close();
+
+// options can be passed to the underlying watch lib as the second arg
+watcher = watch('./*.js', {usePolling: true});
 ```
 
 
