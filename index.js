@@ -1,16 +1,11 @@
-var gaze = require('gaze');
+var chokidar = require('chokidar');
+var anymatch = require('anymatch');
 var EventEmitter = require('events').EventEmitter;
 
-function onWatch(out, cb){
-  return function(err, rwatcher){
-    if (err) out.emit('error', err);
-    rwatcher.on('all', function(evt, path, old){
-      var outEvt = {type: evt, path: path};
-      if(old) outEvt.old = old;
-      out.emit('change', outEvt);
-      if(cb) cb();
-    });
-  }
+var eventMap = {
+  add: 'added',
+  unlink: 'deleted',
+  change: 'changed'
 }
 
 module.exports = function(glob, opts, cb) {
@@ -21,22 +16,64 @@ module.exports = function(glob, opts, cb) {
     opts = {};
   }
 
-  var watcher = gaze(glob, opts, onWatch(out, cb));
+  opts = opts || {};
 
-  watcher.on('end', out.emit.bind(out, 'end'));
+  // overriding chokidar's default if user did not set it explicitly
+  if (opts.ignoreInitial == null) {
+    opts.ignoreInitial = true;
+  }
+
+  var watcher = chokidar.watch(glob, opts);
+
+  var nomatch = true;
+  var filteredCbs = [];
+
+  watcher.on('all', function(evt, path, stats){
+    // convert from chokidar event names to glob-watcher's original names
+    evt = eventMap[evt];
+    if (!evt) {
+      return;
+    }
+    nomatch = false;
+    var outEvt = {
+      type: evt,
+      path: path
+    };
+    if (stats) {
+      outEvt.stats = stats;
+    }
+    out.emit('change', outEvt);
+    filteredCbs.forEach(function(pair) {
+      if (pair.filter(path)) {
+        pair.cb();
+      }
+    });
+    cb && cb();
+  });
+  watcher.on('ready', function() {
+    if (nomatch) {
+      out.emit('nomatch');
+    }
+    out.emit('ready');
+  });
   watcher.on('error', out.emit.bind(out, 'error'));
-  watcher.on('ready', out.emit.bind(out, 'ready'));
-  watcher.on('nomatch', out.emit.bind(out, 'nomatch'));
 
-  out.end = function(){
-    return watcher.close();
-  };
   out.add = function(glob, cb){
-    return watcher.add(glob, onWatch(out, cb));
+    if (cb) {
+      filteredCbs.push({
+        filter: anymatch(glob),
+        cb: cb
+      });
+    }
+    watcher.add(glob);
+    return watcher;
   };
-  out.remove = function(glob){
-    return watcher.remove(glob);
-  };
+  out.end = function() {
+    watcher.close();
+    out.emit('end');
+    return watcher;
+  }
+  out.remove = watcher.unwatch.bind(watcher);
   out._watcher = watcher;
 
   return out;
