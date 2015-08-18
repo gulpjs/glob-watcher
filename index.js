@@ -2,15 +2,10 @@ var chokidar = require('chokidar');
 var anymatch = require('anymatch');
 var EventEmitter = require('events').EventEmitter;
 
-function mapEvents(evt) {
-  switch (evt) {
-    case 'add':
-      return 'added';
-    case 'unlink':
-      return 'deleted';
-    case 'change':
-      return 'changed';
-  }
+var eventMap = {
+  add: 'added',
+  unlink: 'deleted',
+  change: 'changed'
 }
 
 module.exports = function(glob, opts, cb) {
@@ -33,7 +28,8 @@ module.exports = function(glob, opts, cb) {
   var filteredCbs = [];
 
   watcher.on('all', function(evt, path, stats){
-    evt = mapEvents(evt);
+    // convert from chokidar event names to glob-watcher's original names
+    evt = eventMap[evt];
     if (!evt) {
       return;
     }
