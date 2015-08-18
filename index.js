@@ -18,6 +18,7 @@ module.exports = function(glob, opts, cb) {
 
   opts = opts || {};
 
+  // overriding chokidar's default if user did not set it explicitly
   if (opts.ignoreInitial == null) {
     opts.ignoreInitial = true;
   }

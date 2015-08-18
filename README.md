@@ -45,9 +45,14 @@ watcher.remove('./somefolder/dontcare.*');
 // stop watching entirely
 watcher.close();
 
-// options can be passed to the underlying watch lib as the second arg
+// options can be passed to the underlying watch lib (chokidar) as a second arg
 watcher = watch('./*.js', {usePolling: true});
 ```
+
+[Chokidar options reference](https://github.com/paulmillr/chokidar#api)
+
+*Note:* glob-watcher overrides chokidar's default `ignoreInitial` setting to
+`true` if you do not set it explicitly. 
 
 
 [npm-url]: https://npmjs.org/package/glob-watcher
