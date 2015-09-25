@@ -11,17 +11,17 @@
     "lib"
   ],
   "dependencies": {
-    "gaze": "^0.5.1"
+    "gaze": "0.5.1"
   },
   "devDependencies": {
-    "mocha": "^2.0.1",
-    "should": "^6.0.0",
-    "mocha-lcov-reporter": "^0.0.2",
-    "coveralls": "^2.6.1",
-    "istanbul": "^0.3.0",
-    "rimraf": "^2.2.5",
-    "jshint": "^2.4.1",
-    "mkdirp": "^0.5.0"
+    "mocha": "2.3.3",
+    "should": "6.0.3",
+    "mocha-lcov-reporter": "0.0.2",
+    "coveralls": "2.11.4",
+    "istanbul": "0.3.21",
+    "rimraf": "2.4.3",
+    "jshint": "2.8.0",
+    "mkdirp": "0.5.1"
   },
   "scripts": {
     "test": "mocha --reporter spec && jshint",
