@@ -1,43 +1,68 @@
-var gaze = require('gaze');
-var EventEmitter = require('events').EventEmitter;
+'use strict';
 
-function onWatch(out, cb){
-  return function(err, rwatcher){
-    if (err) out.emit('error', err);
-    rwatcher.on('all', function(evt, path, old){
-      var outEvt = {type: evt, path: path};
-      if(old) outEvt.old = old;
-      out.emit('change', outEvt);
-      if(cb) cb();
-    });
-  }
+var chokidar = require('chokidar');
+var debounce = require('lodash.debounce');
+var asyncDone = require('async-done');
+var assignWith = require('lodash.assignwith');
+
+function assignNullish(objValue, srcValue) {
+  return (srcValue == null ? objValue : srcValue);
 }
 
-module.exports = function(glob, opts, cb) {
-  var out = new EventEmitter();
+var defaults = {
+  ignoreInitial: true,
+  delay: 200,
+  queue: true,
+};
 
-  if (typeof opts === 'function') {
-    cb = opts;
-    opts = {};
+function watch(glob, options, cb) {
+  if (typeof options === 'function') {
+    cb = options;
+    options = {};
   }
 
-  var watcher = gaze(glob, opts, onWatch(out, cb));
+  var opt = assignWith({}, defaults, options, assignNullish);
 
-  watcher.on('end', out.emit.bind(out, 'end'));
-  watcher.on('error', out.emit.bind(out, 'error'));
-  watcher.on('ready', out.emit.bind(out, 'ready'));
-  watcher.on('nomatch', out.emit.bind(out, 'nomatch'));
+  var queued = false;
+  var running = false;
 
-  out.end = function(){
-    return watcher.close();
-  };
-  out.add = function(glob, cb){
-    return watcher.add(glob, onWatch(out, cb));
-  };
-  out.remove = function(glob){
-    return watcher.remove(glob);
-  };
-  out._watcher = watcher;
+  var watcher = chokidar.watch(glob, opt);
 
-  return out;
-};
+  function runComplete(err) {
+    running = false;
+
+    if (err) {
+      watcher.emit('error', err);
+    }
+
+    // If we have a run queued, start onChange again
+    if (queued) {
+      queued = false;
+      onChange();
+    }
+  }
+
+  function onChange() {
+    if (running) {
+      if (opt.queue) {
+        queued = true;
+      }
+      return;
+    }
+
+    running = true;
+    asyncDone(cb, runComplete);
+  }
+
+  if (typeof cb === 'function') {
+    var fn = debounce(onChange, opt.delay, opt);
+    watcher
+      .on('change', fn)
+      .on('unlink', fn)
+      .on('add', fn);
+  }
+
+  return watcher;
+}
+
+module.exports = watch;

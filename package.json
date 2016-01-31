@@ -11,7 +11,10 @@
     "lib"
   ],
   "dependencies": {
-    "gaze": "^0.5.1"
+    "async-done": "^1.2.0",
+    "chokidar": "^1.4.2",
+    "lodash.assignwith": "^4.0.6",
+    "lodash.debounce": "^4.0.6"
   },
   "devDependencies": {
     "mocha": "^2.0.1",
