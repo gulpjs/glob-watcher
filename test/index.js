@@ -86,11 +86,11 @@ describe('glob-watcher', function() {
     watcher.on('ready', addFile);
   });
 
-  it('waits for completion is signaled before running again (queues calls)', function(done) {
+  it('waits for completion is signaled before running again', function(done) {
     var runs = 0;
 
     watcher = watch(outGlob, function(cb) {
-      runs++
+      runs++;
       if (runs === 1) {
         setTimeout(function() {
           expect(runs).toEqual(1);
@@ -117,7 +117,7 @@ describe('glob-watcher', function() {
     var runs = 0;
 
     watcher = watch(outGlob, function(cb) {
-      runs++
+      runs++;
       if (runs === 1) {
         var stream = through();
         setTimeout(function() {
@@ -160,7 +160,7 @@ describe('glob-watcher', function() {
     var runs = 0;
 
     watcher = watch(outGlob, { queue: false }, function(cb) {
-      runs++
+      runs++;
       setTimeout(function() {
         // Expect 1 because run 2 is never queued
         expect(runs).toEqual(1);
@@ -181,7 +181,7 @@ describe('glob-watcher', function() {
     var runs = 0;
 
     watcher = watch(outGlob, { delay: (timeout / 2) }, function(cb) {
-      runs++
+      runs++;
       if (runs === 1) {
         setTimeout(function() {
           expect(runs).toEqual(1);
@@ -204,7 +204,7 @@ describe('glob-watcher', function() {
   });
 
   it('passes options to chokidar', function(done) {
-    // Callback is called while chokidar is initializing (discovering file paths)
+    // Callback is called while chokidar is discovering file paths
     // if ignoreInitial is explicitly set to false and passed to chokidar
     watcher = watch(outGlob, { ignoreInitial: false }, function(cb) {
       cb();
@@ -216,7 +216,7 @@ describe('glob-watcher', function() {
     var runs = 0;
 
     watcher = watch(outGlob, { leading: true }, function(cb) {
-      runs++
+      runs++;
       if (runs === 1) {
         setTimeout(function() {
           expect(runs).toEqual(1);
