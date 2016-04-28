@@ -1,39 +1,51 @@
 {
   "name": "glob-watcher",
-  "description": "Watch globs",
   "version": "2.0.0",
-  "homepage": "http://github.com/wearefractal/glob-watcher",
-  "repository": "git://github.com/wearefractal/glob-watcher.git",
-  "author": "Fractal <contact@wearefractal.com> (http://wearefractal.com/)",
-  "main": "./index.js",
-  "files": [
-    "index.js",
-    "lib"
-  ],
-  "dependencies": {
-    "gaze": "^0.5.1"
-  },
-  "devDependencies": {
-    "mocha": "^2.0.1",
-    "should": "^6.0.0",
-    "mocha-lcov-reporter": "^0.0.2",
-    "coveralls": "^2.6.1",
-    "istanbul": "^0.3.0",
-    "rimraf": "^2.2.5",
-    "jshint": "^2.4.1",
-    "mkdirp": "^0.5.0"
-  },
-  "scripts": {
-    "test": "mocha --reporter spec && jshint",
-    "coveralls": "istanbul cover _mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | coveralls && rm -rf ./coverage"
-  },
+  "description": "Watch globs and execute a function upon change, with intelligent defaults for debouncing and queueing.",
+  "author": "Gulp Team <team@gulpjs.com> (http://gulpjs.com/)",
+  "contributors": [],
+  "repository": "gulpjs/glob-watcher",
+  "license": "MIT",
   "engines": {
     "node": ">= 0.10"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "http://github.com/wearefractal/glob-watcher/raw/master/LICENSE"
-    }
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "lint": "eslint . && jscs index.js test/",
+    "pretest": "npm run lint",
+    "test": "mocha --async-only",
+    "cover": "istanbul cover _mocha --report lcovonly",
+    "coveralls": "npm run cover && istanbul-coveralls"
+  },
+  "dependencies": {
+    "async-done": "^1.2.0",
+    "chokidar": "^1.4.3",
+    "lodash.assignwith": "^4.0.6",
+    "lodash.debounce": "^4.0.6"
+  },
+  "devDependencies": {
+    "coveralls": "^2.11.2",
+    "del": "^2.2.0",
+    "eslint": "^1.10.3",
+    "eslint-config-gulp": "^2.0.0",
+    "expect": "^1.16.0",
+    "istanbul": "^0.4.0",
+    "istanbul-coveralls": "^1.0.1",
+    "jscs": "^2.3.5",
+    "jscs-preset-gulp": "^1.0.0",
+    "mocha": "^2.0.0",
+    "mocha-lcov-reporter": "^1.2.0",
+    "through2": "^2.0.1"
+  },
+  "keywords": [
+    "watch",
+    "glob",
+    "async",
+    "queue",
+    "debounce",
+    "callback"
   ]
 }
