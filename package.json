@@ -1,7 +1,7 @@
 {
   "name": "glob-watcher",
   "version": "2.0.0",
-  "description": "Watch globs and execute a callback upon change, with intelligent defaults for debouncing and queueing.",
+  "description": "Watch globs and execute a function upon change, with intelligent defaults for debouncing and queueing.",
   "author": "Gulp Team <team@gulpjs.com> (http://gulpjs.com/)",
   "contributors": [],
   "repository": "gulpjs/glob-watcher",

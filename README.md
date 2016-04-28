@@ -8,7 +8,7 @@
 
 [![NPM version][npm-image]][npm-url] [![Downloads][downloads-image]][npm-url] [![Build Status][travis-image]][travis-url] [![AppVeyor Build Status][appveyor-image]][appveyor-url] [![Coveralls Status][coveralls-image]][coveralls-url] [![Gitter chat][gitter-image]][gitter-url]
 
-Watch globs and execute a callback upon change, with intelligent defaults for debouncing and queueing.
+Watch globs and execute a function upon change, with intelligent defaults for debouncing and queueing.
 
 ## Example
 
@@ -50,17 +50,17 @@ watcher.on('add', function(path, stat) {
 
 ## API
 
-### `watch(globs[, options][, callback])`
+### `watch(globs[, options][, fn])`
 
-Takes a path string, array of path strings, [glob][node-glob] string or array of [glob][node-glob] strings as `globs` to watch on the filesystem. Also optionally takes `options` to configure the watcher and a `callback` to execute when a file changes.
+Takes a path string, an array of path strings, a [glob][node-glob] string or an array of [glob][node-glob] strings as `globs` to watch on the filesystem. Also optionally takes `options` to configure the watcher and a `fn` to execute when a file changes.
 
 Returns an instance of [chokidar][chokidar].
 
-#### `callback([done])`
+#### `fn([callback])`
 
-If the `callback` is passed, it will be called when the watcher emits a `change`, `add` or `unlink` event. It is automatically debounced with a default delay of 200 milliseconds and subsequent calls will be queued and called upon completion. These defaults can be changed using the `options`.
+If the `fn` is passed, it will be called when the watcher emits a `change`, `add` or `unlink` event. It is automatically debounced with a default delay of 200 milliseconds and subsequent calls will be queued and called upon completion. These defaults can be changed using the `options`.
 
-The `callback` is passed a single argument, `done`, which is a function that must be called when work in the `callback` is complete. Instead of calling the `done` function, [async completion][async-completion] can be signalled by:
+The `fn` is passed a single argument, `callback`, which is a function that must be called when work in the `fn` is complete. Instead of calling the `callback` function, [async completion][async-completion] can be signalled by:
   * Returning a `Stream` or `EventEmitter`
   * Returning a `Child Process`
   * Returning a `Promise`
@@ -72,7 +72,7 @@ Once async completion is signalled, if another run is queued, it will be execute
 
 ##### `options.ignoreInitial`
 
-If set to `false` the callback is called during [chokidar][chokidar] instantiation as it discovers the file paths. Useful if it is desirable to trigger the `callback` during startup.
+If set to `false` the `fn` is called during [chokidar][chokidar] instantiation as it discovers the file paths. Useful if it is desirable to trigger the `fn` during startup.
 
 __Passed through to [chokidar][chokidar], but defaulted to `true` instead of `false`.__
 
@@ -82,7 +82,7 @@ Default: `true`
 
 ##### `options.delay`
 
-The delay to wait before triggering the `callback`. Useful for waiting on many changes before doing the work on changed files, e.g. find-and-replace on many files.
+The delay to wait before triggering the `fn`. Useful for waiting on many changes before doing the work on changed files, e.g. find-and-replace on many files.
 
 Type: `Number`
 
@@ -90,7 +90,7 @@ Default: `200` (milliseconds)
 
 ##### `options.queue`
 
-Whether or not a file change should queue the `callback` execution if the `callback` is already running. Useful for long running callbacks.
+Whether or not a file change should queue the `fn` execution if the `fn` is already running. Useful for a long running `fn`.
 
 Type: `Boolean`
 
