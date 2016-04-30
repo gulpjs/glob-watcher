@@ -120,7 +120,7 @@ MIT
 [gitter-url]: https://gitter.im/gulpjs/gulp
 [gitter-image]: https://badges.gitter.im/gulpjs/gulp.png
 
-[glob]: https://github.com/isaacs/node-glob
+[node-glob]: https://github.com/isaacs/node-glob
 [async-completion]: https://github.com/gulpjs/async-done#completion-and-error-resolution
 [chokidar]: https://github.com/paulmillr/chokidar
 [lodash-debounce]: https://lodash.com/docs#debounce
