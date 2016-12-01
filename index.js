@@ -56,10 +56,16 @@ function watch(glob, options, cb) {
 
   if (typeof cb === 'function') {
     var fn = debounce(onChange, opt.delay, opt);
-    watcher
-      .on('change', fn)
-      .on('unlink', fn)
-      .on('add', fn);
+
+    if (!opt.events) {
+      opt.events = ['add', 'change', 'unlink'];
+    }
+
+    opt.events.forEach(
+      function(eventName) {
+        watcher.on(eventName, fn);
+      }
+    );
   }
 
   return watcher;

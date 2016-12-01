@@ -25,6 +25,10 @@ describe('glob-watcher', function() {
     fs.writeFileSync(outFile1, 'hello changed');
   }
 
+  function unlinkFile() {
+    del(outFile1);
+  }
+
   function addFile() {
     fs.writeFileSync(outFile2, 'hello added');
   }
@@ -39,6 +43,10 @@ describe('glob-watcher', function() {
     if (watcher) {
       watcher.close();
     }
+    return del(outDir);
+  });
+
+  after(function() {
     return del(outDir);
   });
 
@@ -247,5 +255,80 @@ describe('glob-watcher', function() {
     // We default `ignoreInitial` to true and it isn't overwritten by null
     // So wait for `on('ready')`
     watcher.on('ready', changeFile);
+  });
+
+  it('filters events by `events` option', function(done) {
+    var log;
+    var verifyTimeout;
+
+    var addWatcher = watchEvent('add');
+    var changeWatcher = watchEvent('change');
+    var unlinkWatcher = watchEvent('unlink');
+
+    log = {
+      add: 0,
+      all: 0,
+      change: 0,
+      unlink: 0,
+    };
+
+    watcher = watch(
+      outGlob,
+      handlerFor('all')
+    );
+
+    watcher
+    .on('add', function() {
+      setTimeout(unlinkFile, 500);
+    })
+    .on('change', function() {
+      setTimeout(addFile, 200);
+    })
+    .on('ready', function() {
+      setTimeout(changeFile, 0);
+    });
+
+    function watchEvent(eventName) {
+      return watch(
+        outGlob,
+        { events: [eventName] },
+        handlerFor(eventName)
+      );
+    }
+
+    function handlerFor(eventName) {
+      return function(cb) {
+        log[eventName]++;
+        cb();
+        verify();
+      };
+    }
+
+    function verify() {
+      expect(log.all).toBeLessThanOrEqualTo(
+        3,
+        'too many events fired'
+      );
+
+      if (log.all === 3) {
+        clearTimeout(verifyTimeout);
+        verifyTimeout = setTimeout(verifyFinal, 100);
+      }
+    }
+
+    function verifyFinal() {
+      expect(log).toEqual({
+        add: 1,
+        all: 3,
+        change: 1,
+        unlink: 1,
+      });
+
+      addWatcher.close();
+      changeWatcher.close();
+      unlinkWatcher.close();
+
+      done();
+    }
   });
 });
