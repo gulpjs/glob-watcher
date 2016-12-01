@@ -10,8 +10,9 @@ function assignNullish(objValue, srcValue) {
 }
 
 var defaults = {
-  ignoreInitial: true,
   delay: 200,
+  events: ['add', 'change', 'unlink'],
+  ignoreInitial: true,
   queue: true,
 };
 
@@ -22,6 +23,10 @@ function watch(glob, options, cb) {
   }
 
   var opt = assignWith({}, defaults, options, assignNullish);
+
+  if (!Array.isArray(opt.events)) {
+    opt.events = [opt.events];
+  }
 
   var queued = false;
   var running = false;
@@ -54,12 +59,17 @@ function watch(glob, options, cb) {
     asyncDone(cb, runComplete);
   }
 
+  var fn;
   if (typeof cb === 'function') {
-    var fn = debounce(onChange, opt.delay, opt);
-    watcher
-      .on('change', fn)
-      .on('unlink', fn)
-      .on('add', fn);
+    fn = debounce(onChange, opt.delay, opt);
+  }
+
+  function watchEvent(eventName) {
+    watcher.on(eventName, fn);
+  }
+
+  if (fn) {
+    opt.events.forEach(watchEvent);
   }
 
   return watcher;

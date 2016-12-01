@@ -42,6 +42,10 @@ describe('glob-watcher', function() {
     return del(outDir);
   });
 
+  after(function() {
+    return del(outDir);
+  });
+
   it('only requires a glob and returns watcher', function(done) {
     watcher = watch(outGlob);
 
@@ -247,5 +251,31 @@ describe('glob-watcher', function() {
     // We default `ignoreInitial` to true and it isn't overwritten by null
     // So wait for `on('ready')`
     watcher.on('ready', changeFile);
+  });
+
+  it('watches exactly the given event', function(done) {
+    var spy = expect.createSpy()
+    .andCall(function(cb) {
+      cb();
+      spy.andThrow(new Error('`Add` handler called for `change` event'));
+      setTimeout(done, 500);
+      changeFile();
+    });
+
+    watcher = watch(outGlob, { events: 'add' }, spy);
+
+    watcher.on('ready', addFile);
+  });
+
+  it('accepts multiple events to watch', function(done) {
+    var spy = expect.createSpy()
+    .andThrow(new Error('`Add`/`Unlink` handler called for `change` event'));
+
+    watcher = watch(outGlob, { events: ['add', 'unlink'] }, spy);
+
+    watcher.on('ready', function() {
+      changeFile();
+      setTimeout(done, 500);
+    });
   });
 });
