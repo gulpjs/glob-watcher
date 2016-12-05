@@ -65,11 +65,9 @@ function watch(glob, options, cb) {
   if (typeof cb === 'function') {
     var fn = debounce(onChange, opt.delay, opt);
 
-    function watchEvent(eventName) {
+    opt.events.forEach(function watchEvent(eventName) {
       watcher.on(eventName, fn);
-    }
-
-    opt.events.forEach(watchEvent);
+    });
   }
 
   return watcher;
