@@ -23,6 +23,14 @@ function watch(glob, options, cb) {
 
   var opt = assignWith({}, defaults, options, assignNullish);
 
+  if (!opt.events) {
+    opt.events = ['add', 'change', 'unlink'];
+  }
+
+  if (!(opt.events instanceof Array)) {
+    opt.events = [opt.events];
+  }
+
   var queued = false;
   var running = false;
 
@@ -57,15 +65,11 @@ function watch(glob, options, cb) {
   if (typeof cb === 'function') {
     var fn = debounce(onChange, opt.delay, opt);
 
-    if (!opt.events) {
-      opt.events = ['add', 'change', 'unlink'];
+    function watchEvent(eventName) {
+      watcher.on(eventName, fn);
     }
 
-    opt.events.forEach(
-      function(eventName) {
-        watcher.on(eventName, fn);
-      }
-    );
+    opt.events.forEach(watchEvent);
   }
 
   return watcher;

@@ -98,9 +98,9 @@ Default: `true`
 
 ##### `options.events`
 
-An array of event names to listen for. Useful if you only need to watch specific events.
+An event name or array of event names to listen for. Useful if you only need to watch specific events.
 
-Type: `Array`
+Type: `String | Array<String>`
 
 Default: `[ 'add', 'change', 'unlink' ]`
 

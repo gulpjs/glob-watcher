@@ -25,10 +25,6 @@ describe('glob-watcher', function() {
     fs.writeFileSync(outFile1, 'hello changed');
   }
 
-  function unlinkFile() {
-    del(outFile1);
-  }
-
   function addFile() {
     fs.writeFileSync(outFile2, 'hello added');
   }
@@ -257,78 +253,29 @@ describe('glob-watcher', function() {
     watcher.on('ready', changeFile);
   });
 
-  it('filters events by `events` option', function(done) {
-    var log;
-    var verifyTimeout;
-
-    var addWatcher = watchEvent('add');
-    var changeWatcher = watchEvent('change');
-    var unlinkWatcher = watchEvent('unlink');
-
-    log = {
-      add: 0,
-      all: 0,
-      change: 0,
-      unlink: 0,
-    };
-
-    watcher = watch(
-      outGlob,
-      handlerFor('all')
-    );
-
-    watcher
-    .on('add', function() {
-      setTimeout(unlinkFile, 500);
-    })
-    .on('change', function() {
-      setTimeout(addFile, 200);
-    })
-    .on('ready', function() {
-      setTimeout(changeFile, 0);
+  it('watches exactly the given event', function(done) {
+    var spy = expect.createSpy()
+    .andCall(function(cb) {
+      cb();
+      spy.andThrow(new Error('`Add` handler called for `change` event'));
+      setTimeout(done, 500);
+      changeFile();
     });
 
-    function watchEvent(eventName) {
-      return watch(
-        outGlob,
-        { events: [eventName] },
-        handlerFor(eventName)
-      );
-    }
+    watcher = watch(outGlob, { events: 'add' }, spy);
 
-    function handlerFor(eventName) {
-      return function(cb) {
-        log[eventName]++;
-        cb();
-        verify();
-      };
-    }
+    watcher.on('ready', addFile);
+  });
 
-    function verify() {
-      expect(log.all).toBeLessThanOrEqualTo(
-        3,
-        'too many events fired'
-      );
+  it('accepts multiple events to watch', function(done) {
+    var spy = expect.createSpy()
+    .andThrow(new Error('`Add`/`Unlink` handler called for `change` event'));
 
-      if (log.all === 3) {
-        clearTimeout(verifyTimeout);
-        verifyTimeout = setTimeout(verifyFinal, 100);
-      }
-    }
+    watcher = watch(outGlob, { events: ['add', 'unlink'] }, spy);
 
-    function verifyFinal() {
-      expect(log).toEqual({
-        add: 1,
-        all: 3,
-        change: 1,
-        unlink: 1,
-      });
-
-      addWatcher.close();
-      changeWatcher.close();
-      unlinkWatcher.close();
-
-      done();
-    }
+    watcher.on('ready', function() {
+      changeFile();
+      setTimeout(done, 500);
+    });
   });
 });
