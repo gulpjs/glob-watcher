@@ -96,6 +96,14 @@ Type: `Boolean`
 
 Default: `true`
 
+##### `options.events`
+
+An event name or array of event names to listen for. Useful if you only need to watch specific events.
+
+Type: `String | Array<String>`
+
+Default: `[ 'add', 'change', 'unlink' ]`
+
 ##### other
 
 Options are passed directly to [lodash.debounce][lodash-debounce] and [chokidar][chokidar], so all their options are supported. Any debounce-related options are documented in [lodash.debounce][lodash-debounce]. Any chokidar-related options are documented in [chokidar][chokidar].
