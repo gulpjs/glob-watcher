@@ -3,13 +3,9 @@
 var chokidar = require('chokidar');
 var debounce = require('lodash.debounce');
 var asyncDone = require('async-done');
-var assignWith = require('lodash.assignwith');
+var defaults = require('object.defaults');
 
-function assignNullish(objValue, srcValue) {
-  return (srcValue == null ? objValue : srcValue);
-}
-
-var defaults = {
+var defaultOpts = {
   delay: 200,
   events: ['add', 'change', 'unlink'],
   ignoreInitial: true,
@@ -22,7 +18,7 @@ function watch(glob, options, cb) {
     options = {};
   }
 
-  var opt = assignWith({}, defaults, options, assignNullish);
+  var opt = defaults({}, options, defaultOpts);
 
   if (!Array.isArray(opt.events)) {
     opt.events = [opt.events];
