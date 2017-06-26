@@ -30,6 +30,15 @@ describe('glob-watcher', function() {
     }, 125);
   });
 
+  it('should emit nomatch via EE', function(done) {
+    var fname = join(__dirname, "./doesnt_exist_lol/temp.coffee");
+
+    var watcher = watch(fname);
+    watcher.on('nomatch', function() {
+      done();
+    });
+  });
+
   it('should return a valid file struct via callback', function(done) {
     var expectedName = join(__dirname, "./fixtures/stuff/test.coffee");
     var fname = join(__dirname, "./fixtures/**/test.coffee");

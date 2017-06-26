@@ -21,6 +21,7 @@ module.exports = function(glob, opts, cb) {
   watcher.on('end', out.emit.bind(out, 'end'));
   watcher.on('error', out.emit.bind(out, 'error'));
   watcher.on('ready', out.emit.bind(out, 'ready'));
+  watcher.on('nomatch', out.emit.bind(out, 'nomatch'));
 
   out.end = function(){
     return watcher.close();
