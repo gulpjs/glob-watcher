@@ -28,7 +28,6 @@
   },
   "devDependencies": {
     "coveralls": "^2.11.2",
-    "del": "^2.2.0",
     "eslint": "^1.10.3",
     "eslint-config-gulp": "^2.0.0",
     "expect": "^1.16.0",
@@ -38,6 +37,7 @@
     "jscs-preset-gulp": "^1.0.0",
     "mocha": "^2.0.0",
     "mocha-lcov-reporter": "^1.2.0",
+    "rimraf": "^2.6.1",
     "through2": "^2.0.1"
   },
   "keywords": [

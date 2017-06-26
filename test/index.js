@@ -3,8 +3,8 @@
 var fs = require('fs');
 var path = require('path');
 
-var del = require('del');
 var expect = require('expect');
+var rimraf = require('rimraf');
 var through = require('through2');
 
 var watch = require('../');
@@ -35,15 +35,15 @@ describe('glob-watcher', function() {
     cb();
   });
 
-  afterEach(function() {
+  afterEach(function(cb) {
     if (watcher) {
       watcher.close();
     }
-    return del(outDir);
+    rimraf(outDir, cb);
   });
 
-  after(function() {
-    return del(outDir);
+  after(function(cb) {
+    rimraf(outDir, cb);
   });
 
   it('only requires a glob and returns watcher', function(done) {
