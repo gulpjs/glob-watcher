@@ -10,7 +10,7 @@
 
 Watch globs and execute a function upon change, with intelligent defaults for debouncing and queueing.
 
-## Example
+## Usage
 
 ```js
 var watch = require('glob-watcher');
