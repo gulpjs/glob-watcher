@@ -106,7 +106,7 @@ Default: `[ 'add', 'change', 'unlink' ]`
 
 ##### other
 
-Options are passed directly to [lodash.debounce][lodash-debounce] and [chokidar][chokidar], so all their options are supported. Any debounce-related options are documented in [lodash.debounce][lodash-debounce]. Any chokidar-related options are documented in [chokidar][chokidar].
+Options are passed directly to [chokidar][chokidar].
 
 ## License
 
@@ -131,4 +131,3 @@ MIT
 [node-glob]: https://github.com/isaacs/node-glob
 [async-completion]: https://github.com/gulpjs/async-done#completion-and-error-resolution
 [chokidar]: https://github.com/paulmillr/chokidar
-[lodash-debounce]: https://lodash.com/docs#debounce

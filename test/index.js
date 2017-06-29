@@ -216,32 +216,6 @@ describe('glob-watcher', function() {
     });
   });
 
-  it('passes options to lodash.debounce', function(done) {
-    var runs = 0;
-
-    watcher = watch(outGlob, { leading: true }, function(cb) {
-      runs++;
-      if (runs === 1) {
-        setTimeout(function() {
-          expect(runs).toEqual(1);
-          cb();
-        }, timeout * 3);
-      }
-      if (runs === 2) {
-        expect(runs).toEqual(2);
-        cb();
-        done();
-      }
-    });
-
-    // We default `ignoreInitial` to true, so always wait for `on('ready')`
-    watcher.on('ready', function() {
-      changeFile();
-      // Fires on the leading edge on the debounce
-      setTimeout(changeFile, timeout);
-    });
-  });
-
   it('does not override default values with null values', function(done) {
     watcher = watch(outGlob, { ignoreInitial: null }, function(cb) {
       cb();

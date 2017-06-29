@@ -1,7 +1,7 @@
 'use strict';
 
 var chokidar = require('chokidar');
-var debounce = require('lodash.debounce');
+var debounce = require('just-debounce');
 var asyncDone = require('async-done');
 var defaults = require('object.defaults');
 
@@ -57,7 +57,7 @@ function watch(glob, options, cb) {
 
   var fn;
   if (typeof cb === 'function') {
-    fn = debounce(onChange, opt.delay, opt);
+    fn = debounce(onChange, opt.delay);
   }
 
   function watchEvent(eventName) {
