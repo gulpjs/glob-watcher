@@ -3,7 +3,7 @@
 var chokidar = require('chokidar');
 var debounce = require('just-debounce');
 var asyncDone = require('async-done');
-var defaults = require('object.defaults');
+var defaults = require('object.defaults/immutable');
 
 var defaultOpts = {
   delay: 200,
@@ -18,7 +18,7 @@ function watch(glob, options, cb) {
     options = {};
   }
 
-  var opt = defaults({}, options, defaultOpts);
+  var opt = defaults(options, defaultOpts);
 
   if (!Array.isArray(opt.events)) {
     opt.events = [opt.events];

@@ -24,7 +24,7 @@
     "async-done": "^1.2.0",
     "chokidar": "^1.4.3",
     "just-debounce": "^1.0.0",
-    "object.defaults": "^1.0.0"
+    "object.defaults": "^1.1.0"
   },
   "devDependencies": {
     "coveralls": "^2.11.2",
