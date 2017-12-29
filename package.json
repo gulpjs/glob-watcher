@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "async-done": "^1.2.0",
-    "chokidar": "^1.4.3",
+    "chokidar": "^2.0.0",
     "just-debounce": "^1.0.0",
     "object.defaults": "^1.1.0"
   },
