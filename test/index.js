@@ -6,6 +6,7 @@ var path = require('path');
 var expect = require('expect');
 var rimraf = require('rimraf');
 var through = require('through2');
+var normalizePath = require('normalize-path');
 
 var watch = require('../');
 
@@ -19,7 +20,8 @@ describe('glob-watcher', function() {
   var outDir = path.join(__dirname, './fixtures/');
   var outFile1 = path.join(outDir, 'changed.js');
   var outFile2 = path.join(outDir, 'added.js');
-  var outGlob = path.join(outDir, './**/*.js');
+  var globPattern = '**/*.js';
+  var outGlob = normalizePath(path.join(outDir, globPattern));
 
   function changeFile() {
     fs.writeFileSync(outFile1, 'hello changed');
@@ -49,8 +51,8 @@ describe('glob-watcher', function() {
   it('only requires a glob and returns watcher', function(done) {
     watcher = watch(outGlob);
 
-    watcher.once('change', function(path) {
-      expect(path).toEqual(outFile1);
+    watcher.once('change', function(filepath) {
+      expect(filepath).toEqual(outFile1);
       done();
     });
 
@@ -61,13 +63,26 @@ describe('glob-watcher', function() {
   it('picks up added files', function(done) {
     watcher = watch(outGlob);
 
-    watcher.once('add', function(path) {
-      expect(path).toEqual(outFile2);
+    watcher.once('add', function(filepath) {
+      expect(filepath).toEqual(outFile2);
       done();
     });
 
     // We default `ignoreInitial` to true, so always wait for `on('ready')`
     watcher.on('ready', addFile);
+  });
+
+  it('works with OS-specific cwd', function(done) {
+    watcher = watch('./fixtures/' + globPattern, { cwd: __dirname });
+
+    watcher.once('change', function(filepath) {
+      // Uses path.join here because the resulting path is OS-specific
+      expect(filepath).toEqual(path.join('fixtures', 'changed.js'));
+      done();
+    });
+
+    // We default `ignoreInitial` to true, so always wait for `on('ready')`
+    watcher.on('ready', changeFile);
   });
 
   it('accepts a callback & calls when file is changed', function(done) {
