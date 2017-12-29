@@ -52,7 +52,9 @@ watcher.on('add', function(path, stat) {
 
 ### `watch(globs[, options][, fn])`
 
-Takes a path string, an array of path strings, a [glob][node-glob] string or an array of [glob][node-glob] strings as `globs` to watch on the filesystem. Also optionally takes `options` to configure the watcher and a `fn` to execute when a file changes.
+Takes a path string, an array of path strings, a [glob][micromatch] string or an array of [glob][micromatch] strings as `globs` to watch on the filesystem. Also optionally takes `options` to configure the watcher and a `fn` to execute when a file changes.
+
+__Note: As of 5.0.0, globs must use `/` as the separator character because `\\` is reserved for escape sequences (as per the Bash 4.3 & Micromatch specs). This means you can't use `path.join()` or `__dirname` in Windows environments. If you need to use `path.join()`, you can use [normalize-path][normalize-path] against your paths afterwards. If you need to use `__dirname`, you can set it as the `cwd` option that gets passed directly to [chokidar][chokidar]. The [micromatch docs][micromatch-backslashes] contain more information about backslashes.__
 
 Returns an instance of [chokidar][chokidar].
 
@@ -112,6 +114,12 @@ Options are passed directly to [chokidar][chokidar].
 
 MIT
 
+[micromatch]: https://github.com/micromatch/micromatch
+[normalize-path]: https://www.npmjs.com/package/normalize-path
+[micromatch-backslashes]: https://github.com/micromatch/micromatch#backslashes
+[async-completion]: https://github.com/gulpjs/async-done#completion-and-error-resolution
+[chokidar]: https://github.com/paulmillr/chokidar
+
 [downloads-image]: http://img.shields.io/npm/dm/glob-watcher.svg
 [npm-url]: https://npmjs.com/package/glob-watcher
 [npm-image]: http://img.shields.io/npm/v/glob-watcher.svg
@@ -127,7 +135,3 @@ MIT
 
 [gitter-url]: https://gitter.im/gulpjs/gulp
 [gitter-image]: https://badges.gitter.im/gulpjs/gulp.png
-
-[node-glob]: https://github.com/isaacs/node-glob
-[async-completion]: https://github.com/gulpjs/async-done#completion-and-error-resolution
-[chokidar]: https://github.com/paulmillr/chokidar
