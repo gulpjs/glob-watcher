@@ -10,6 +10,8 @@ var defaultOpts = {
   events: ['add', 'change', 'unlink'],
   ignoreInitial: true,
   queue: true,
+  // TODO: This default should change in a semver major
+  emitErrors: true,
 };
 
 function watch(glob, options, cb) {
@@ -32,7 +34,7 @@ function watch(glob, options, cb) {
   function runComplete(err) {
     running = false;
 
-    if (err) {
+    if (err && opt.emitErrors) {
       watcher.emit('error', err);
     }
 
