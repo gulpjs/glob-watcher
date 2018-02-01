@@ -175,6 +175,22 @@ describe('glob-watcher', function() {
     watcher.on('ready', changeFile);
   });
 
+  it('allows the user to disable emitted errors', function(done) {
+    var expectedError = new Error('boom');
+
+    watcher = watch(outGlob, { emitErrors: false }, function(cb) {
+      cb(expectedError);
+      setTimeout(done, timeout * 3);
+    });
+
+    watcher.on('error', function(err) {
+      expect(err).toNotExist();
+    });
+
+    // We default `ignoreInitial` to true, so always wait for `on('ready')`
+    watcher.on('ready', changeFile);
+  });
+
   it('allows the user to disable queueing', function(done) {
     var runs = 0;
 
