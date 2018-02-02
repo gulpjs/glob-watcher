@@ -12,6 +12,18 @@ var defaultOpts = {
   queue: true,
 };
 
+function listenerCount(ee, evtName) {
+  if (typeof ee.listenerCount === 'function') {
+    return ee.listenerCount(evtName);
+  }
+
+  return ee.listeners(evtName).length;
+}
+
+function hasErrorListener(ee) {
+  return listenerCount(ee, 'error') !== 0;
+}
+
 function watch(glob, options, cb) {
   if (typeof options === 'function') {
     cb = options;
@@ -32,7 +44,7 @@ function watch(glob, options, cb) {
   function runComplete(err) {
     running = false;
 
-    if (err) {
+    if (err && hasErrorListener(watcher)) {
       watcher.emit('error', err);
     }
 
