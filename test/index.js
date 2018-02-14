@@ -159,7 +159,7 @@ describe('glob-watcher', function() {
     });
   });
 
-  it('emits an error if one occurs in the callback', function(done) {
+  it('emits an error if one occurs in the callback and handler attached', function(done) {
     var expectedError = new Error('boom');
 
     watcher = watch(outGlob, function(cb) {
@@ -169,6 +169,18 @@ describe('glob-watcher', function() {
     watcher.on('error', function(err) {
       expect(err).toEqual(expectedError);
       done();
+    });
+
+    // We default `ignoreInitial` to true, so always wait for `on('ready')`
+    watcher.on('ready', changeFile);
+  });
+
+  it('does not emit an error (and crash) when no handlers attached', function(done) {
+    var expectedError = new Error('boom');
+
+    watcher = watch(outGlob, function(cb) {
+      cb(expectedError);
+      setTimeout(done, timeout * 3);
     });
 
     // We default `ignoreInitial` to true, so always wait for `on('ready')`
