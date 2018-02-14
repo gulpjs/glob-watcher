@@ -1,6 +1,6 @@
 {
   "name": "glob-watcher",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Watch globs and execute a function upon change, with intelligent defaults for debouncing and queueing.",
   "author": "Gulp Team <team@gulpjs.com> (http://gulpjs.com/)",
   "contributors": [],
