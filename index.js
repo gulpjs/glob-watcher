@@ -4,6 +4,8 @@ var chokidar = require('chokidar');
 var debounce = require('just-debounce');
 var asyncDone = require('async-done');
 var defaults = require('object.defaults/immutable');
+var isNegatedGlob = require('is-negated-glob');
+var anymatch = require('anymatch');
 
 var defaultOpts = {
   delay: 200,
@@ -38,6 +40,58 @@ function watch(glob, options, cb) {
 
   var queued = false;
   var running = false;
+
+  var positives = [];
+  var negatives = [];
+
+  if (!Array.isArray(glob)) {
+    glob = [glob];
+  }
+
+  glob.forEach(sortGlobs);
+
+  function sortGlobs(globString, index) {
+    if (typeof globString !== 'string') {
+      throw new Error('Invalid glob at index ' + index);
+    }
+
+    var result = isNegatedGlob(globString);
+    var globArray = result.negated ? negatives : positives;
+
+    globArray.push({
+      index: index,
+      glob: result.pattern,
+    });
+  }
+
+  function shouldBeIgnored(path) {
+    for (var x = 0; x < negatives.length; x++) {
+      var negMatcher = anymatch([negatives[x].glob]);
+      if (negMatcher(path)) {
+        var prevNegationIndex = -1;
+        var haveEncounteredPos = false;
+        for (var y = x - 1; y >= 0; y--) {
+          var negGlob = isNegatedGlob(glob[y]);
+          if (negGlob.negated && haveEncounteredPos) {
+            prevNegationIndex = y;
+            break;
+          } else if (!negGlob.negated) {
+            haveEncounteredPos = true;
+          }
+        }
+
+        var positivesToCheck = positives.filter(function(positive) {
+          return (positive.index < negatives[x].index && positive.index > prevNegationIndex);
+        });
+
+        var posMatcher = anymatch(positivesToCheck);
+        return posMatcher(path);
+      }
+    }
+
+  }
+
+  opt.ignored = shouldBeIgnored;
 
   var watcher = chokidar.watch(glob, opt);
 
