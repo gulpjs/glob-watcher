@@ -38,15 +38,15 @@ function watch(glob, options, cb) {
     opt.events = [opt.events];
   }
 
+  if (!Array.isArray(glob)) {
+    glob = [glob];
+  }
+
   var queued = false;
   var running = false;
 
   var positives = [];
   var negatives = [];
-
-  if (!Array.isArray(glob)) {
-    glob = [glob];
-  }
 
   glob.forEach(sortGlobs);
 
@@ -56,44 +56,50 @@ function watch(glob, options, cb) {
     }
 
     var result = isNegatedGlob(globString);
-    var globArray = result.negated ? negatives : positives;
 
-    globArray.push({
+    var posResult = result.negated ? null : {
       index: index,
       glob: result.pattern,
-    });
+    };
+
+    var negResult = result.negated ? {
+      index: index,
+      glob: result.pattern,
+    } : null;
+
+    positives.push(posResult);
+    negatives.push(negResult);
   }
 
   function shouldBeIgnored(path) {
-    for (var x = 0; x < negatives.length; x++) {
-      var negMatcher = anymatch([negatives[x].glob]);
-      if (negMatcher(path)) {
-        var prevNegationIndex = -1;
-        var haveEncounteredPos = false;
-        for (var y = x - 1; y >= 0; y--) {
-          var negGlob = isNegatedGlob(glob[y]);
-          if (negGlob.negated && haveEncounteredPos) {
-            prevNegationIndex = y;
-            break;
-          } else if (!negGlob.negated) {
-            haveEncounteredPos = true;
-          }
-        }
+    var positiveGlobs = positives.reverse()
+      .filter(notNull)
+      .map(getGlob);
 
-        var positivesToCheck = positives.filter(function(positive) {
-          return (positive.index < negatives[x].index && positive.index > prevNegationIndex);
-        });
+    var negativeGlobs = negatives.reverse()
+      .filter(notNull)
+      .map(getGlob);
 
-        var posMatcher = anymatch(positivesToCheck);
-        return posMatcher(path);
-      }
-    }
+    var positiveMatch = anymatch(positiveGlobs, path, true);
+    var negativeMatch = anymatch(negativeGlobs, path, true);
 
+    return negativeMatch > positiveMatch;
   }
 
-  opt.ignored = shouldBeIgnored;
+  var toWatch = positives
+  .filter(notNull)
+  .map(getGlob);
 
-  var watcher = chokidar.watch(glob, opt);
+  opt.ignored = shouldBeIgnored;
+  var watcher = chokidar.watch(toWatch, opt);
+
+  function notNull(val) {
+    return val != null;
+  }
+
+  function getGlob(val) {
+    return val.glob;
+  }
 
   function runComplete(err) {
     running = false;

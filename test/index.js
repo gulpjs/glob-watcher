@@ -22,6 +22,7 @@ describe('glob-watcher', function() {
   var outFile2 = path.join(outDir, 'added.js');
   var globPattern = '**/*.js';
   var outGlob = normalizePath(path.join(outDir, globPattern));
+  var ignoreGlob = '!' + normalizePath(path.join(outDir, 'changed.js'));
 
   function changeFile() {
     fs.writeFileSync(outFile1, 'hello changed');
@@ -278,5 +279,17 @@ describe('glob-watcher', function() {
       changeFile();
       setTimeout(done, 500);
     });
+  });
+
+  it('can readd a file after it has been ignored', function(done) {
+    watcher = watch([outGlob, ignoreGlob, outGlob]);
+
+    watcher.once('change', function(filepath) {
+      expect(filepath).toEqual(outFile1);
+      done();
+    });
+
+    // We default `ignoreInitial` to true, so always wait for `on('ready')`
+    watcher.on('ready', changeFile);
   });
 });
