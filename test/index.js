@@ -22,6 +22,8 @@ describe('glob-watcher', function() {
   var outFile2 = path.join(outDir, 'added.js');
   var globPattern = '**/*.js';
   var outGlob = normalizePath(path.join(outDir, globPattern));
+  var singleAdd = normalizePath(path.join(outDir, 'changed.js'));
+  var ignoreGlob = '!' + singleAdd;
 
   function changeFile() {
     fs.writeFileSync(outFile1, 'hello changed');
@@ -278,5 +280,43 @@ describe('glob-watcher', function() {
       changeFile();
       setTimeout(done, 500);
     });
+  });
+
+  it('can ignore a glob after it has been added', function(done) {
+    watcher = watch([outGlob, ignoreGlob]);
+
+    watcher.once('change', function(filepath) {
+      // It should never reach here
+      expect(filepath).toNotExist();
+      done();
+    });
+
+    // We default `ignoreInitial` to true, so always wait for `on('ready')`
+    watcher.on('ready', changeFile);
+
+    setTimeout(done, 1500);
+  });
+
+  it('can re-add a glob after it has been negated', function(done) {
+    watcher = watch([outGlob, ignoreGlob, singleAdd]);
+
+    watcher.once('change', function(filepath) {
+      expect(filepath).toEqual(singleAdd);
+      done();
+    });
+
+    // We default `ignoreInitial` to true, so always wait for `on('ready')`
+    watcher.on('ready', changeFile);
+  });
+
+  it('does not mutate the globs array', function(done) {
+    var globs = [outGlob, ignoreGlob, singleAdd];
+    watcher = watch(globs);
+
+    expect(globs[0]).toEqual(outGlob);
+    expect(globs[1]).toEqual(ignoreGlob);
+    expect(globs[2]).toEqual(singleAdd);
+
+    done();
   });
 });

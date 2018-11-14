@@ -4,6 +4,8 @@ var chokidar = require('chokidar');
 var debounce = require('just-debounce');
 var asyncDone = require('async-done');
 var defaults = require('object.defaults/immutable');
+var isNegatedGlob = require('is-negated-glob');
+var anymatch = require('anymatch');
 
 var defaultOpts = {
   delay: 200,
@@ -24,6 +26,10 @@ function hasErrorListener(ee) {
   return listenerCount(ee, 'error') !== 0;
 }
 
+function exists(val) {
+  return val != null;
+}
+
 function watch(glob, options, cb) {
   if (typeof options === 'function') {
     cb = options;
@@ -36,10 +42,51 @@ function watch(glob, options, cb) {
     opt.events = [opt.events];
   }
 
+  if (Array.isArray(glob)) {
+    // We slice so we don't mutate the passed globs array
+    glob = glob.slice();
+  } else {
+    glob = [glob];
+  }
+
   var queued = false;
   var running = false;
 
-  var watcher = chokidar.watch(glob, opt);
+  // These use sparse arrays to keep track of the index in the
+  // original globs array
+  var positives = new Array(glob.length);
+  var negatives = new Array(glob.length);
+
+  // Reverse the glob here so we don't end up with a positive
+  // and negative glob in position 0 after a reverse
+  glob.reverse().forEach(sortGlobs);
+
+  function sortGlobs(globString, index) {
+    var result = isNegatedGlob(globString);
+    if (result.negated) {
+      negatives[index] = result.pattern;
+    } else {
+      positives[index] = result.pattern;
+    }
+  }
+
+  function shouldBeIgnored(path) {
+    var positiveMatch = anymatch(positives, path, true);
+    var negativeMatch = anymatch(negatives, path, true);
+    // If negativeMatch is -1, that means it was never negated
+    if (negativeMatch === -1) {
+      return false;
+    }
+
+    // If the negative is "less than" the positive, that means
+    // it came later in the glob array before we reversed them
+    return negativeMatch < positiveMatch;
+  }
+
+  var toWatch = positives.filter(exists);
+
+  opt.ignored = shouldBeIgnored;
+  var watcher = chokidar.watch(toWatch, opt);
 
   function runComplete(err) {
     running = false;
