@@ -10,6 +10,7 @@ var anymatch = require('anymatch');
 var defaultOpts = {
   delay: 200,
   events: ['add', 'change', 'unlink'],
+  ignored: [],
   ignoreInitial: true,
   queue: true,
 };
@@ -85,7 +86,7 @@ function watch(glob, options, cb) {
 
   var toWatch = positives.filter(exists);
 
-  opt.ignored = shouldBeIgnored;
+  opt.ignored = [].concat(opt.ignored, shouldBeIgnored);
   var watcher = chokidar.watch(toWatch, opt);
 
   function runComplete(err) {

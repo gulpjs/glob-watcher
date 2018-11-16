@@ -319,4 +319,25 @@ describe('glob-watcher', function() {
 
     done();
   });
+
+  it('passes ignores through to chokidar', function(done) {
+    var ignored = [singleAdd];
+    watcher = watch(outGlob, {
+      ignored: ignored,
+    });
+
+    watcher.once('change', function(filepath) {
+      // It should never reach here
+      expect(filepath).toNotExist();
+      done();
+    });
+
+    // We default `ignoreInitial` to true, so always wait for `on('ready')`
+    watcher.on('ready', changeFile);
+
+    // Just test the non-mutation in this test
+    expect(ignored.length).toEqual(1);
+
+    setTimeout(done, 1500);
+  });
 });
