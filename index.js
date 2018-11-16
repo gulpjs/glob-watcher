@@ -86,7 +86,11 @@ function watch(glob, options, cb) {
 
   var toWatch = positives.filter(exists);
 
-  opt.ignored = [].concat(opt.ignored, shouldBeIgnored);
+  // We only do add our custom `ignored` if there are some negative globs
+  // TODO: I'm not sure how to test this
+  if (negatives.some(exists)) {
+    opt.ignored = [].concat(opt.ignored, shouldBeIgnored);
+  }
   var watcher = chokidar.watch(toWatch, opt);
 
   function runComplete(err) {
