@@ -27,8 +27,8 @@ function hasErrorListener(ee) {
   return listenerCount(ee, 'error') !== 0;
 }
 
-function exists(val) {
-  return val != null;
+function getPattern(val) {
+  return val.pattern;
 }
 
 function watch(glob, options, cb) {
@@ -53,10 +53,8 @@ function watch(glob, options, cb) {
   var queued = false;
   var running = false;
 
-  // These use sparse arrays to keep track of the index in the
-  // original globs array
-  var positives = new Array(glob.length);
-  var negatives = new Array(glob.length);
+  var positives = [];
+  var negatives = [];
 
   // Reverse the glob here so we don't end up with a positive
   // and negative glob in position 0 after a reverse
@@ -64,31 +62,28 @@ function watch(glob, options, cb) {
 
   function sortGlobs(globString, index) {
     var result = isNegatedGlob(globString);
-    if (result.negated) {
-      negatives[index] = result.pattern;
-    } else {
-      positives[index] = result.pattern;
-    }
+    var obj = { pattern: result.pattern, index: index };
+    (result.negated ? negatives : positives).push(obj);
   }
 
+  var toWatch = positives.map(getPattern);
+
   function shouldBeIgnored(path) {
-    var positiveMatch = anymatch(positives, path, true);
-    var negativeMatch = anymatch(negatives, path, true);
+    var negativeMatch = anymatch(negatives.map(getPattern), path, true);
     // If negativeMatch is -1, that means it was never negated
     if (negativeMatch === -1) {
       return false;
     }
 
+    var positiveMatch = anymatch(toWatch, path, true);
+
     // If the negative is "less than" the positive, that means
     // it came later in the glob array before we reversed them
-    return negativeMatch < positiveMatch;
+    return negatives[negativeMatch].index < positives[positiveMatch].index;
   }
 
-  var toWatch = positives.filter(exists);
-
   // We only do add our custom `ignored` if there are some negative globs
-  // TODO: I'm not sure how to test this
-  if (negatives.some(exists)) {
+  if (negatives.length) {
     opt.ignored = [].concat(opt.ignored, shouldBeIgnored);
   }
   var watcher = chokidar.watch(toWatch, opt);
