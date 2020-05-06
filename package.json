@@ -21,9 +21,9 @@
     "coveralls": "npm run cover && istanbul-coveralls"
   },
   "dependencies": {
-    "anymatch": "^2.0.0",
-    "async-done": "^1.2.0",
-    "chokidar": "^2.0.0",
+    "anymatch": "^3.1.1",
+    "async-done": "^1.3.2",
+    "chokidar": "^3.4.0",
     "is-negated-glob": "^1.0.0",
     "just-debounce": "^1.0.0",
     "object.defaults": "^1.1.0"
