@@ -2,12 +2,12 @@
   "name": "glob-watcher",
   "version": "5.0.5",
   "description": "Watch globs and execute a function upon change, with intelligent defaults for debouncing and queueing.",
-  "author": "Gulp Team <team@gulpjs.com> (http://gulpjs.com/)",
+  "author": "Gulp Team <team@gulpjs.com> (https://gulpjs.com/)",
   "contributors": [],
   "repository": "gulpjs/glob-watcher",
   "license": "MIT",
   "engines": {
-    "node": ">= 0.10"
+    "node": ">=10.13.0"
   },
   "main": "index.js",
   "files": [
@@ -16,9 +16,7 @@
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
-    "test": "mocha --async-only",
-    "cover": "istanbul cover _mocha --report lcovonly",
-    "coveralls": "npm run cover && istanbul-coveralls"
+    "test": "nyc mocha --async-only"
   },
   "dependencies": {
     "anymatch": "^2.0.0",
@@ -30,16 +28,24 @@
     "object.defaults": "^1.1.0"
   },
   "devDependencies": {
-    "coveralls": "^2.11.2",
-    "eslint": "^2.13.1",
-    "eslint-config-gulp": "^3.0.1",
-    "expect": "^1.16.0",
-    "istanbul": "^0.4.0",
-    "istanbul-coveralls": "^1.0.1",
-    "mocha": "^2.0.0",
+    "eslint": "^7.0.0",
+    "eslint-config-gulp": "^5.0.0",
+    "expect": "^26.0.1",
+    "jest-mock": "^26.0.1",
+    "mocha": "^7.1.2",
     "mocha-lcov-reporter": "^1.2.0",
+    "nyc": "^15.0.1",
     "rimraf": "^2.6.1",
     "through2": "^2.0.1"
+  },
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ]
+  },
+  "prettier": {
+    "singleQuote": true
   },
   "keywords": [
     "watch",

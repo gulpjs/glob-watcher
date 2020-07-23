@@ -87,7 +87,7 @@ function watch(glob, options, cb) {
   if (negatives.some(exists)) {
     var normalizedPositives = positives.map(joinCwd);
     var normalizedNegatives = negatives.map(joinCwd);
-    var shouldBeIgnored = function(path) {
+    var shouldBeIgnored = function (path) {
       var positiveMatch = anymatch(normalizedPositives, path, true);
       var negativeMatch = anymatch(normalizedNegatives, path, true);
       // If negativeMatch is -1, that means it was never negated
