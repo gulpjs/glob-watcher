@@ -340,4 +340,20 @@ describe('glob-watcher', function() {
 
     setTimeout(done, 1500);
   });
+
+  // https://github.com/gulpjs/glob-watcher/issues/46
+  it('ignoring globs also works with `cwd` option', function(done) {
+    watcher = watch(['fixtures/**', '!fixtures/*.js'], { cwd: 'test' });
+
+    watcher.once('change', function(filepath) {
+      // It should never reach here
+      expect(filepath).toNotExist();
+      done();
+    });
+
+    // We default `ignoreInitial` to true, so always wait for `on('ready')`
+    watcher.on('ready', changeFile);
+
+    setTimeout(done, 1500);
+  });
 });
