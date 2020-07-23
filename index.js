@@ -14,6 +14,7 @@ var defaultOpts = {
   ignored: [],
   ignoreInitial: true,
   queue: true,
+  useFsEvents: false,
 };
 
 function listenerCount(ee, evtName) {
