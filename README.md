@@ -1,3 +1,11 @@
+## BN fork
+
+![Build Status](https://github.com/BonnierNews/glob-watcher/actions/workflows/node.js.yml/badge.svg)
+
+This is a fork of Gulp.js [glob-watcher](https://github.com/gulpjs/glob-watcher) repo, which is the repo for [glob-watcher](https://www.npmjs.com/package/glob-watcher) on npm.
+
+That repo hasn't been updated for a number of years, so this fork was created simply to keep packages up to date with security fixes.
+
 <p align="center">
   <a href="http://gulpjs.com">
     <img height="257" width="114" src="https://raw.githubusercontent.com/gulpjs/artwork/master/gulp-2x.png">
