@@ -1,8 +1,8 @@
 'use strict';
 
 var chokidar = require('chokidar');
-var debounce = require('just-debounce');
 var asyncDone = require('async-done');
+var debounce = require('./lib/debounce');
 
 var defaultOpts = {
   delay: 200,
