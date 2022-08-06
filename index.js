@@ -2,62 +2,31 @@
 
 var chokidar = require('chokidar');
 var asyncDone = require('async-done');
+var normalizeArgs = require('./lib/normalize-args');
 var debounce = require('./lib/debounce');
 
-var defaultOpts = {
-  delay: 200,
-  events: ['add', 'change', 'unlink'],
-  ignored: [],
-  ignoreInitial: true,
-  queue: true,
-};
-
-function listenerCount(ee, evtName) {
-  /* istanbul ignore else */
-  if (typeof ee.listenerCount === 'function') {
-    return ee.listenerCount(evtName);
-  }
-
-  /* istanbul ignore next */
-  return ee.listeners(evtName).length;
-}
-
-function hasErrorListener(ee) {
-  return listenerCount(ee, 'error') !== 0;
-}
-
-function exists(val) {
-  return val != null;
-}
-
 function watch(glob, options, cb) {
-  if (typeof options === 'function') {
-    cb = options;
-    options = {};
-  }
+  return normalizeArgs(glob, options, cb, watchProc);
+}
 
-  var opt = Object.assign({}, defaultOpts, options);
+function watchProc(globs, options, cb) {
+  var watcher = chokidar.watch(globs, options);
+  registerWatchEvent(watcher, options, cb);
+  return watcher;
+}
 
-  if (!Array.isArray(opt.events)) {
-    opt.events = [opt.events];
-  }
-
-  if (Array.isArray(glob)) {
-    // We slice so we don't mutate the passed globs array
-    glob = glob.slice();
-  } else {
-    glob = [glob];
+function registerWatchEvent(watcher, opts, cb) {
+  if (typeof cb !== 'function') {
+    return;
   }
 
   var queued = false;
   var running = false;
 
-  var watcher = chokidar.watch(glob, opt);
-
   function runComplete(err) {
     running = false;
 
-    if (err && hasErrorListener(watcher)) {
+    if (err && watcher.listenerCount('error') > 0) {
       watcher.emit('error', err);
     }
 
@@ -70,7 +39,7 @@ function watch(glob, options, cb) {
 
   function onChange() {
     if (running) {
-      if (opt.queue) {
+      if (opts.queue) {
         queued = true;
       }
       return;
@@ -80,20 +49,12 @@ function watch(glob, options, cb) {
     asyncDone(cb, runComplete);
   }
 
-  var fn;
-  if (typeof cb === 'function') {
-    fn = debounce(onChange, opt.delay);
-  }
+  var debounced = debounce(onChange, opts.delay);
+  opts.events.forEach(watchEvent);
 
   function watchEvent(eventName) {
-    watcher.on(eventName, fn);
+    watcher.on(eventName, debounced);
   }
-
-  if (fn) {
-    opt.events.forEach(watchEvent);
-  }
-
-  return watcher;
 }
 
 module.exports = watch;
