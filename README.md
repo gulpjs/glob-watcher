@@ -1,12 +1,12 @@
 <p align="center">
-  <a href="http://gulpjs.com">
+  <a href="https://gulpjs.com">
     <img height="257" width="114" src="https://raw.githubusercontent.com/gulpjs/artwork/master/gulp-2x.png">
   </a>
 </p>
 
 # glob-watcher
 
-[![NPM version][npm-image]][npm-url] [![Downloads][downloads-image]][npm-url] [![Build Status][travis-image]][travis-url] [![AppVeyor Build Status][appveyor-image]][appveyor-url] [![Coveralls Status][coveralls-image]][coveralls-url] [![Gitter chat][gitter-image]][gitter-url]
+[![NPM version][npm-image]][npm-url] [![Downloads][downloads-image]][npm-url] [![Build Status][ci-image]][ci-url] [![Coveralls Status][coveralls-image]][coveralls-url]
 
 Watch globs and execute a function upon change, with intelligent defaults for debouncing and queueing.
 
@@ -114,24 +114,22 @@ Options are passed directly to [chokidar][chokidar].
 
 MIT
 
+<!-- prettier-ignore-start -->
+[downloads-image]: https://img.shields.io/npm/dm/glob-watcher.svg?style=flat-square
+[npm-url]: https://npmjs.com/package/glob-watcher
+[npm-image]: https://img.shields.io/npm/v/glob-watcher.svg?style=flat-square
+
+[ci-url]: https://github.com/gulpjs/glob-watcher/actions?query=workflow:dev
+[ci-image]: https://img.shields.io/github/workflow/status/gulpjs/glob-watcher/dev?style=flat-square
+
+[coveralls-url]: https://coveralls.io/r/gulpjs/glob-watcher
+[coveralls-image]: https://img.shields.io/coveralls/gulpjs/glob-watcher/master.svg?style=flat-square
+<!-- prettier-ignore-end -->
+
+<!-- prettier-ignore-start -->
 [micromatch]: https://github.com/micromatch/micromatch
 [normalize-path]: https://www.npmjs.com/package/normalize-path
 [micromatch-backslashes]: https://github.com/micromatch/micromatch#backslashes
 [async-completion]: https://github.com/gulpjs/async-done#completion-and-error-resolution
 [chokidar]: https://github.com/paulmillr/chokidar
-
-[downloads-image]: http://img.shields.io/npm/dm/glob-watcher.svg
-[npm-url]: https://npmjs.com/package/glob-watcher
-[npm-image]: http://img.shields.io/npm/v/glob-watcher.svg
-
-[travis-url]: https://travis-ci.org/gulpjs/glob-watcher
-[travis-image]: http://img.shields.io/travis/gulpjs/glob-watcher.svg?label=travis-ci
-
-[appveyor-url]: https://ci.appveyor.com/project/gulpjs/glob-watcher
-[appveyor-image]: https://img.shields.io/appveyor/ci/gulpjs/glob-watcher.svg?label=appveyor
-
-[coveralls-url]: https://coveralls.io/r/gulpjs/glob-watcher
-[coveralls-image]: http://img.shields.io/coveralls/gulpjs/glob-watcher/master.svg
-
-[gitter-url]: https://gitter.im/gulpjs/gulp
-[gitter-image]: https://badges.gitter.im/gulpjs/gulp.png
+<!-- prettier-ignore-end -->

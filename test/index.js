@@ -4,6 +4,7 @@ var fs = require('fs');
 var path = require('path');
 
 var expect = require('expect');
+var sinon = require('sinon');
 var rimraf = require('rimraf');
 var through = require('through2');
 var normalizePath = require('normalize-path');
@@ -21,8 +22,8 @@ describe('glob-watcher', function() {
   var outFile1 = path.join(outDir, 'changed.js');
   var outFile2 = path.join(outDir, 'added.js');
   var globPattern = '**/*.js';
-  var outGlob = normalizePath(path.join(outDir, globPattern));
-  var singleAdd = normalizePath(path.join(outDir, 'changed.js'));
+  var outGlob = path.join(outDir, globPattern);
+  var singleAdd = path.join(outDir, 'changed.js');
   var ignoreGlob = '!' + singleAdd;
 
   function changeFile() {
@@ -257,10 +258,9 @@ describe('glob-watcher', function() {
   });
 
   it('watches exactly the given event', function(done) {
-    var spy = expect.createSpy()
-    .andCall(function(cb) {
+    var spy = sinon.spy(function(cb) {
       cb();
-      spy.andThrow(new Error('`Add` handler called for `change` event'));
+      expect(spy.callCount).toEqual(1);
       setTimeout(done, 500);
       changeFile();
     });
@@ -271,14 +271,18 @@ describe('glob-watcher', function() {
   });
 
   it('accepts multiple events to watch', function(done) {
-    var spy = expect.createSpy()
-    .andThrow(new Error('`Add`/`Unlink` handler called for `change` event'));
+    var spy = sinon.spy(function(cb) {
+      cb();
+      if (spy.callCount === 2) {
+        done();
+      }
+    });
 
-    watcher = watch(outGlob, { events: ['add', 'unlink'] }, spy);
+    watcher = watch(outGlob, { events: ['add', 'change'] }, spy);
 
-    watcher.on('ready', function() {
-      changeFile();
-      setTimeout(done, 500);
+    watcher.on('ready', addFile);
+    watcher.on('add', function() {
+      setTimeout(changeFile, 500);
     });
   });
 
@@ -301,6 +305,23 @@ describe('glob-watcher', function() {
     watcher = watch([outGlob, ignoreGlob, singleAdd]);
 
     watcher.once('change', function(filepath) {
+      expect(filepath).toEqual(singleAdd);
+      done();
+    });
+
+    // We default `ignoreInitial` to true, so always wait for `on('ready')`
+    watcher.on('ready', changeFile);
+  });
+
+  it('can re-add a glob after it has been negated (unix style path)', function(done) {
+    watcher = watch([
+      normalizePath(outGlob),
+      normalizePath(ignoreGlob),
+      normalizePath(singleAdd),
+    ]);
+
+    watcher.once('change', function(filepath) {
+      // chokidar pass windows style path on windows.
       expect(filepath).toEqual(singleAdd);
       done();
     });
