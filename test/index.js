@@ -258,12 +258,12 @@ describe('glob-watcher', function() {
 
   it('watches exactly the given event', function(done) {
     var spy = expect.createSpy()
-    .andCall(function(cb) {
-      cb();
-      spy.andThrow(new Error('`Add` handler called for `change` event'));
-      setTimeout(done, 500);
-      changeFile();
-    });
+      .andCall(function(cb) {
+        cb();
+        spy.andThrow(new Error('`Add` handler called for `change` event'));
+        setTimeout(done, 500);
+        changeFile();
+      });
 
     watcher = watch(outGlob, { events: 'add' }, spy);
 
@@ -272,7 +272,7 @@ describe('glob-watcher', function() {
 
   it('accepts multiple events to watch', function(done) {
     var spy = expect.createSpy()
-    .andThrow(new Error('`Add`/`Unlink` handler called for `change` event'));
+      .andThrow(new Error('`Add`/`Unlink` handler called for `change` event'));
 
     watcher = watch(outGlob, { events: ['add', 'unlink'] }, spy);
 
