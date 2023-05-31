@@ -3,9 +3,8 @@
 var expect = require('expect');
 var normalizeArgs = require('../../lib/normalize-args');
 
-describe('lib/normalize-args', function() {
-
-  it('should normalize glob to an array', function(done) {
+describe('lib/normalize-args', function () {
+  it('should normalize glob to an array', function (done) {
     var opts0 = {
       delay: 500,
       events: ['all'],
@@ -14,9 +13,9 @@ describe('lib/normalize-args', function() {
       queue: false,
       persistent: true,
     };
-    var cb0 = function() {};
+    var cb0 = function () {};
 
-    normalizeArgs('*.txt', opts0, cb0, function(glob, opts, cb) {
+    normalizeArgs('*.txt', opts0, cb0, function (glob, opts, cb) {
       expect(Array.isArray(glob)).toBeTruthy();
       expect(opts).not.toBe(opts0);
       expect(opts).toEqual(opts0);
@@ -25,11 +24,11 @@ describe('lib/normalize-args', function() {
     });
   });
 
-  it('should complement options with default options', function(done) {
+  it('should complement options with default options', function (done) {
     var glob0 = ['*.txt'];
-    var cb0 = function() {};
+    var cb0 = function () {};
 
-    normalizeArgs(glob0, {}, cb0, function(glob, opts, cb) {
+    normalizeArgs(glob0, {}, cb0, function (glob, opts, cb) {
       expect(glob).not.toBe(glob0);
       expect(glob).toEqual(glob0);
       expect(opts).toEqual({
@@ -44,14 +43,14 @@ describe('lib/normalize-args', function() {
     });
   });
 
-  it('should normalize options.events to an array', function(done) {
+  it('should normalize options.events to an array', function (done) {
     var glob0 = ['*.txt'];
     var opts0 = {
       events: 'all',
     };
-    var cb0 = function() {};
+    var cb0 = function () {};
 
-    normalizeArgs(glob0, opts0, cb0, function(glob, opts, cb) {
+    normalizeArgs(glob0, opts0, cb0, function (glob, opts, cb) {
       expect(glob).not.toBe(glob0);
       expect(glob).toEqual(glob0);
       expect(opts).toEqual({
@@ -66,10 +65,10 @@ describe('lib/normalize-args', function() {
     });
   });
 
-  it('should change 2nd arg to cb if 2nd arg is a function', function(done) {
+  it('should change 2nd arg to cb if 2nd arg is a function', function (done) {
     var glob0 = ['*.txt'];
-    var cb0 = function() {};
-    normalizeArgs(glob0, cb0, undefined, function(glob, opts, cb) {
+    var cb0 = function () {};
+    normalizeArgs(glob0, cb0, undefined, function (glob, opts, cb) {
       expect(glob).not.toBe(glob0);
       expect(glob).toEqual(glob0);
       expect(opts).toEqual({
@@ -83,5 +82,4 @@ describe('lib/normalize-args', function() {
       done();
     });
   });
-
 });

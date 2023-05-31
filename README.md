@@ -15,7 +15,7 @@ Watch globs and execute a function upon change, with intelligent defaults for de
 ```js
 var watch = require('glob-watcher');
 
-watch(['./*.js', '!./something.js'], function(done){
+watch(['./*.js', '!./something.js'], function (done) {
   // This function will be called each time a globbed file is changed
   // but is debounced with a 200ms delay (default) and queues subsequent calls
 
@@ -35,14 +35,14 @@ var watcher = watch(['./*.js', '!./something.js']);
 
 // Listen for the 'change' event to get `path`/`stat`
 // No async completion available because this is the raw chokidar instance
-watcher.on('change', function(path, stat) {
+watcher.on('change', function (path, stat) {
   // `path` is the path of the changed file
   // `stat` is an `fs.Stat` object (not always available)
 });
 
 // Listen for other events
 // No async completion available because this is the raw chokidar instance
-watcher.on('add', function(path, stat) {
+watcher.on('add', function (path, stat) {
   // `path` is the path of the changed file
   // `stat` is an `fs.Stat` object (not always available)
 });
@@ -54,7 +54,7 @@ watcher.on('add', function(path, stat) {
 
 Takes a path string, an array of path strings, a [glob][micromatch] string or an array of [glob][micromatch] strings as `globs` to watch on the filesystem. Also optionally takes `options` to configure the watcher and a `fn` to execute when a file changes.
 
-__Note: As of 5.0.0, globs must use `/` as the separator character because `\\` is reserved for escape sequences (as per the Bash 4.3 & Micromatch specs). This means you can't use `path.join()` or `__dirname` in Windows environments. If you need to use `path.join()`, you can use [normalize-path][normalize-path] against your paths afterwards. If you need to use `__dirname`, you can set it as the `cwd` option that gets passed directly to [chokidar][chokidar]. The [micromatch docs][micromatch-backslashes] contain more information about backslashes.__
+**Note: As of 5.0.0, globs must use `/` as the separator character because `\\` is reserved for escape sequences (as per the Bash 4.3 & Micromatch specs). This means you can't use `path.join()` or `**dirname`in Windows environments. If you need to use`path.join()`, you can use [normalize-path][normalize-path] against your paths afterwards. If you need to use `**dirname`, you can set it as the `cwd` option that gets passed directly to [chokidar][chokidar]. The [micromatch docs][micromatch-backslashes] contain more information about backslashes.**
 
 Returns an instance of [chokidar][chokidar].
 
@@ -63,10 +63,11 @@ Returns an instance of [chokidar][chokidar].
 If the `fn` is passed, it will be called when the watcher emits a `change`, `add` or `unlink` event. It is automatically debounced with a default delay of 200 milliseconds and subsequent calls will be queued and called upon completion. These defaults can be changed using the `options`.
 
 The `fn` is passed a single argument, `callback`, which is a function that must be called when work in the `fn` is complete. Instead of calling the `callback` function, [async completion][async-completion] can be signalled by:
-  * Returning a `Stream` or `EventEmitter`
-  * Returning a `Child Process`
-  * Returning a `Promise`
-  * Returning an `Observable`
+
+- Returning a `Stream` or `EventEmitter`
+- Returning a `Child Process`
+- Returning a `Promise`
+- Returning an `Observable`
 
 Once async completion is signalled, if another run is queued, it will be executed.
 
@@ -76,7 +77,7 @@ Once async completion is signalled, if another run is queued, it will be execute
 
 If set to `false` the `fn` is called during [chokidar][chokidar] instantiation as it discovers the file paths. Useful if it is desirable to trigger the `fn` during startup.
 
-__Passed through to [chokidar][chokidar], but defaulted to `true` instead of `false`.__
+**Passed through to [chokidar][chokidar], but defaulted to `true` instead of `false`.**
 
 Type: `Boolean`
 
