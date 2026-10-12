@@ -136,3 +136,11 @@ MIT
 [coveralls-url]: https://coveralls.io/r/gulpjs/glob-watcher
 [coveralls-image]: https://img.shields.io/coveralls/gulpjs/glob-watcher/main.svg?style=flat-square
 <!-- prettier-ignore-end -->
+
+<!-- prettier-ignore-start -->
+[micromatch]: https://github.com/micromatch/micromatch
+[normalize-path]: https://www.npmjs.com/package/normalize-path
+[micromatch-backslashes]: https://github.com/micromatch/micromatch#backslashes
+[async-completion]: https://github.com/gulpjs/async-done#completion-and-error-resolution
+[chokidar]: https://github.com/paulmillr/chokidar
+<!-- prettier-ignore-end -->
