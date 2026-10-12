@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
-var chokidar = require('chokidar');
-var asyncDone = require('async-done');
-var normalizeArgs = require('./lib/normalize-args');
-var debounce = require('./lib/debounce');
+var chokidar = require("chokidar");
+var asyncDone = require("async-done");
+var normalizeArgs = require("./lib/normalize-args");
+var debounce = require("./lib/debounce");
 
 function watch(glob, options, cb) {
   return normalizeArgs(glob, options, cb, watchProc);
@@ -16,7 +16,7 @@ function watchProc(globs, options, cb) {
 }
 
 function registerWatchEvent(watcher, opts, cb) {
-  if (typeof cb !== 'function') {
+  if (typeof cb !== "function") {
     return;
   }
 
@@ -26,8 +26,8 @@ function registerWatchEvent(watcher, opts, cb) {
   function runComplete(err) {
     running = false;
 
-    if (err && watcher.listenerCount('error') > 0) {
-      watcher.emit('error', err);
+    if (err && watcher.listenerCount("error") > 0) {
+      watcher.emit("error", err);
     }
 
     // If we have a run queued, start onChange again

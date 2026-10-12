@@ -13,9 +13,9 @@ Watch globs and execute a function upon change, with intelligent defaults for de
 ## Usage
 
 ```js
-var watch = require('glob-watcher');
+var watch = require("glob-watcher");
 
-watch(['./*.js', '!./something.js'], function (done) {
+watch(["./*.js", "!./something.js"], function (done) {
   // This function will be called each time a globbed file is changed
   // but is debounced with a 200ms delay (default) and queues subsequent calls
 
@@ -31,18 +31,18 @@ watch(['./*.js', '!./something.js'], function (done) {
 });
 
 // Raw chokidar instance
-var watcher = watch(['./*.js', '!./something.js']);
+var watcher = watch(["./*.js", "!./something.js"]);
 
 // Listen for the 'change' event to get `path`/`stat`
 // No async completion available because this is the raw chokidar instance
-watcher.on('change', function (path, stat) {
+watcher.on("change", function (path, stat) {
   // `path` is the path of the changed file
   // `stat` is an `fs.Stat` object (not always available)
 });
 
 // Listen for other events
 // No async completion available because this is the raw chokidar instance
-watcher.on('add', function (path, stat) {
+watcher.on("add", function (path, stat) {
   // `path` is the path of the changed file
   // `stat` is an `fs.Stat` object (not always available)
 });
@@ -111,6 +111,16 @@ Default: `[ 'add', 'change', 'unlink' ]`
 
 Options are passed directly to [chokidar][chokidar].
 
+## Strict No LLM / No AI Policy
+
+No LLMs for issues.
+
+No LLMs for patches / pull requests.
+
+No LLMs for comments on the bug tracker, including translation.
+
+English is encouraged, but not required. You are welcome to post in your native language and rely on others to have their own translation tools of choice to interpret your words.
+
 ## License
 
 MIT
@@ -120,11 +130,11 @@ MIT
 [npm-url]: https://npmjs.com/package/glob-watcher
 [npm-image]: https://img.shields.io/npm/v/glob-watcher.svg?style=flat-square
 
-[ci-url]: https://github.com/gulpjs/glob-watcher/actions?query=workflow:dev
-[ci-image]: https://img.shields.io/github/actions/workflow/status/gulpjs/glob-watcher/dev.yml?branch=master&style=flat-square
+[ci-url]: https://github.com/gulpjs/glob-watcher/actions/workflows/dev.yml
+[ci-image]: https://img.shields.io/github/actions/workflow/status/gulpjs/glob-watcher/dev.yml?style=flat-square
 
 [coveralls-url]: https://coveralls.io/r/gulpjs/glob-watcher
-[coveralls-image]: https://img.shields.io/coveralls/gulpjs/glob-watcher/master.svg?style=flat-square
+[coveralls-image]: https://img.shields.io/coveralls/gulpjs/glob-watcher/main.svg?style=flat-square
 <!-- prettier-ignore-end -->
 
 <!-- prettier-ignore-start -->

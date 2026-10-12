@@ -1,11 +1,11 @@
-'use strict';
+"use strict";
 
-var expect = require('expect');
-var sinon = require('sinon');
-var debounce = require('../../lib/debounce');
+var expect = require("expect");
+var sinon = require("sinon");
+var debounce = require("../../lib/debounce");
 
-describe('lib/debounce', function () {
-  it('should call an original function with specified delay', function (done) {
+describe("lib/debounce", function () {
+  it("should call an original function with specified delay", function (done) {
     expect.assertions(1);
 
     var executed = false;
@@ -23,7 +23,7 @@ describe('lib/debounce', function () {
     }, 11);
   });
 
-  it('should extend delay against multiple calls', function (done) {
+  it("should extend delay against multiple calls", function (done) {
     expect.assertions(1);
 
     var fn = debounce(function (a) {
@@ -58,7 +58,7 @@ describe('lib/debounce', function () {
     }, 5);
   });
 
-  it('should run if a preceding call already run', function (done) {
+  it("should run if a preceding call already run", function (done) {
     expect.assertions(2);
 
     var spy = sinon.spy(function (a) {
