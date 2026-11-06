@@ -17,12 +17,12 @@ var timeout = 200;
 describe("glob-watcher", function () {
   var watcher;
 
-  var outDir = path.join(__dirname, "./fixtures/");
-  var outFile1 = path.join(outDir, "changed.js");
-  var outFile2 = path.join(outDir, "added.js");
+  var outDir = path.posix.join(__dirname, "./fixtures/");
+  var outFile1 = path.posix.join(outDir, "changed.js");
+  var outFile2 = path.posix.join(outDir, "added.js");
   var globPattern = "**/*.js";
-  var outGlob = path.join(outDir, globPattern);
-  var singleAdd = path.join(outDir, "changed.js");
+  var outGlob = path.posix.join(outDir, globPattern);
+  var singleAdd = path.posix.join(outDir, "changed.js");
   var ignoreGlob = "!" + singleAdd;
 
   function changeFile() {
