@@ -337,16 +337,19 @@ describe("glob-watcher", function () {
   it("can ignore a glob after it has been added", function (t, done) {
     watcher = watch([outGlob, ignoreGlob]);
 
-    watcher.once("change", function (filepath) {
-      // It should never reach here
-      assert.ok(!filepath);
-      done();
+    var spy = t.mock.fn((filepath) => {
+      console.log(filepath);
+      assert.fail("should never be called");
     });
+    watcher.once("change", spy);
 
     // We default `ignoreInitial` to true, so always wait for `on('ready')`
     watcher.on("ready", changeFile);
 
-    setTimeout(done, 1500);
+    setTimeout(function () {
+      assert.strictEqual(spy.mock.callCount(), 0);
+      done();
+    }, 1500);
   });
 
   it("can re-add a glob after it has been negated", function (t, done) {
