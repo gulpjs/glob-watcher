@@ -6,6 +6,8 @@ var debounce = require("../../lib/debounce");
 
 describe("lib/debounce", function () {
   it("should call an original function with specified delay", function (t, done) {
+    t.plan(2);
+
     var executed = false;
     var fn = debounce(function () {
       executed = true;

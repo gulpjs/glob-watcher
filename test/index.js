@@ -395,11 +395,10 @@ describe("glob-watcher", function () {
       ignored: ignored,
     });
 
-    watcher.once("change", function (filepath) {
-      // It should never reach here
-      assert.ok(!filepath);
-      done();
+    var spy = t.mock.fn(() => {
+      assert.fail("should never be called");
     });
+    watcher.once("change", spy);
 
     // We default `ignoreInitial` to true, so always wait for `on('ready')`
     watcher.on("ready", changeFile);
@@ -407,22 +406,29 @@ describe("glob-watcher", function () {
     // Just test the non-mutation in this test
     assert.deepStrictEqual(ignored.length, 1);
 
-    setTimeout(done, 1500);
+    setTimeout(function () {
+      assert.strictEqual(spy.mock.callCount(), 0);
+      done();
+    }, 1500);
   });
 
   // https://github.com/gulpjs/glob-watcher/issues/46
   it("ignoring globs also works with `cwd` option", function (t, done) {
-    watcher = watch(["fixtures/**", "!fixtures/*.js"], { cwd: "test" });
+    // Note: In issue #46, the submitted specified a relative path, but Chokidar
+    // requires it to be absolute path or else the resolved globs become incorrect
+    watcher = watch(["fixtures/**", "!fixtures/*.js"], { cwd: __dirname });
 
-    watcher.once("change", function (filepath) {
-      // It should never reach here
-      assert.ok(!filepath);
-      done();
+    var spy = t.mock.fn(() => {
+      assert.fail("should never be called");
     });
+    watcher.once("change", spy);
 
     // We default `ignoreInitial` to true, so always wait for `on('ready')`
     watcher.on("ready", changeFile);
 
-    setTimeout(done, 1500);
+    setTimeout(function () {
+      assert.strictEqual(spy.mock.callCount(), 0);
+      done();
+    }, 1500);
   });
 });
