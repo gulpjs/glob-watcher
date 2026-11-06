@@ -335,7 +335,7 @@ describe("glob-watcher", function () {
   });
 
   it("can ignore a glob after it has been added", function (t, done) {
-    watcher = watch([outGlob, ignoreGlob]);
+    watcher = watch([outGlob, ignoreGlob], { cwd: path.posix.resolve(__dirname) });
 
     var spy = t.mock.fn((filepath) => {
       console.log(filepath);
