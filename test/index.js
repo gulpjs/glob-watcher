@@ -17,14 +17,13 @@ var timeout = 200;
 describe("glob-watcher", function () {
   var watcher;
 
-  var dirname = normalizePath(__dirname);
-  var outDir = path.posix.join(dirname, "./fixtures/");
-  var outFile1 = path.posix.join(outDir, "changed.js");
-  var outFile2 = path.posix.join(outDir, "added.js");
+  var outDir = path.join(__dirname, "./fixtures/");
+  var outFile1 = path.join(outDir, "changed.js");
+  var outFile2 = path.join(outDir, "added.js");
   var globPattern = "**/*.js";
-  var outGlob = path.posix.join(outDir, globPattern);
-  var singleAdd = path.posix.join(outDir, "changed.js");
-  var ignoreGlob = "!" + path.posix.join(outDir, "*.js");
+  var outGlob = path.join(outDir, globPattern);
+  var singleAdd = path.join(outDir, "changed.js");
+  var ignoreGlob = "!" + singleAdd;
 
   function changeFile() {
     fs.writeFileSync(outFile1, "hello changed");
@@ -75,7 +74,7 @@ describe("glob-watcher", function () {
   });
 
   it("works with OS-specific cwd", function (t, done) {
-    watcher = watch("./fixtures/" + globPattern, { cwd: dirname });
+    watcher = watch("./fixtures/" + globPattern, { cwd: __dirname });
 
     watcher.once("change", function (filepath) {
       // Uses path.join here because the resulting path is OS-specific
@@ -423,7 +422,7 @@ describe("glob-watcher", function () {
   it("ignoring globs also works with `cwd` option", function (t, done) {
     // Note: In issue #46, the submitted specified a relative path, but Chokidar
     // requires it to be absolute path or else the resolved globs become incorrect
-    watcher = watch(["fixtures/**", "!fixtures/*.js"], { cwd: dirname });
+    watcher = watch(["fixtures/**", "!fixtures/*.js"], { cwd: __dirname });
 
     var spy = t.mock.fn(() => {
       assert.fail("should never be called");
