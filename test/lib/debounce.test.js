@@ -1,12 +1,12 @@
 "use strict";
 
-var expect = require("expect");
-var sinon = require("sinon");
+var { describe, it } = require("node:test");
+
 var debounce = require("../../lib/debounce");
 
 describe("lib/debounce", function () {
-  it("should call an original function with specified delay", function (done) {
-    expect.assertions(1);
+  it("should call an original function with specified delay", function (t, done) {
+    t.plan(2);
 
     var executed = false;
     var fn = debounce(function () {
@@ -15,19 +15,19 @@ describe("lib/debounce", function () {
 
     fn();
 
-    expect(executed).toBeFalsy();
+    t.assert.ok(!executed);
 
     setTimeout(function () {
-      expect(executed).toBeTruthy();
+      t.assert.ok(executed);
       done();
     }, 11);
   });
 
-  it("should extend delay against multiple calls", function (done) {
-    expect.assertions(1);
+  it("should extend delay against multiple calls", function (t, done) {
+    t.plan(1);
 
     var fn = debounce(function (a) {
-      expect(a).toBe(3);
+      t.assert.strictEqual(a, 3);
       done();
     }, 50);
 
@@ -39,11 +39,11 @@ describe("lib/debounce", function () {
     }, 3);
   });
 
-  it("should extends delay if a preceding call doesn't run yet", function (done) {
-    expect.assertions(1);
+  it("should extends delay if a preceding call doesn't run yet", function (t, done) {
+    t.plan(1);
 
     var fn = debounce(function (a) {
-      expect(a).toBe(3);
+      t.assert.strictEqual(a, 3);
       done();
     }, 10);
 
@@ -58,23 +58,27 @@ describe("lib/debounce", function () {
     }, 5);
   });
 
-  it("should run if a preceding call already run", function (done) {
-    expect.assertions(2);
+  it("should run if a preceding call already run", function (t, done) {
+    t.plan(2);
 
-    var spy = sinon.spy(function (a) {
-      switch (spy.callCount) {
+    let callCount = 0;
+
+    function callback(a) {
+      callCount++;
+
+      switch (callCount) {
         case 1:
-          expect(a).toBe(2);
+          t.assert.strictEqual(a, 2);
           break;
         case 2:
-          expect(a).toBe(3);
+          t.assert.strictEqual(a, 3);
           done();
           break;
         default:
-          throw new Error();
+          t.assert.fail("should not be reached");
       }
-    });
-    var fn = debounce(spy, 6);
+    }
+    var fn = debounce(callback, 6);
 
     fn(1);
 
