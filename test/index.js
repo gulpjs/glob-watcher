@@ -336,8 +336,8 @@ describe("glob-watcher", function () {
   });
 
   it("can ignore a glob after it has been added", function (t, done) {
-    console.log(outGlob, ignoreGlob);
-    watcher = watch([outGlob, ignoreGlob]);
+    // console.log(outGlob, ignoreGlob);
+    watcher = watch(["fixtures/**/*.js", "!fixtures/changed.js"], { cwd: __dirname });
 
     console.log(watcher._getGlobIgnored());
 
