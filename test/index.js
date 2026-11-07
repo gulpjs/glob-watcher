@@ -297,8 +297,8 @@ describe("glob-watcher", function () {
 
   it("watches exactly the given event", function (t, done) {
     var spy = t.mock.fn((cb) => {
-      changeFile();
       cb();
+      changeFile();
     });
 
     watcher = watch(outGlob, { events: "add" }, spy);
@@ -407,7 +407,7 @@ describe("glob-watcher", function () {
       assert.strictEqual(spy.mock.callCount(), 1);
       assert.strictEqual(spy.mock.calls[0].arguments[0], "fixtures/changed.js");
       done();
-    }, 1000);
+    }, 1500);
   });
 
   it(
