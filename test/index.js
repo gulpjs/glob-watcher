@@ -1,5 +1,6 @@
 "use strict";
 
+var os = require("node:os");
 var fs = require("node:fs");
 var path = require("node:path");
 var assert = require("node:assert");
@@ -13,6 +14,7 @@ var watch = require("../");
 
 // Default delay on debounce
 var timeout = 200;
+var isWindows = os.platform() === "win32";
 
 describe("glob-watcher", function () {
   var watcher;
@@ -334,26 +336,28 @@ describe("glob-watcher", function () {
     });
   });
 
-  it("can ignore a glob after it has been added", function (t, done) {
-    // console.log(outGlob, ignoreGlob);
-    watcher = watch(["fixtures/**/*.js", "!fixtures/changed.js"], { cwd: __dirname });
+  it(
+    "can ignore a glob after it has been added",
+    // Chokidar doesn't normalize absolute Windows globs correctly so we can't test this
+    { skip: isWindows },
+    function (t, done) {
+      watcher = watch([outGlob, ignoreGlob]);
 
-    console.log(watcher._getGlobIgnored());
+      var spy = t.mock.fn((filepath) => {
+        console.log(filepath);
+        assert.fail("should never be called");
+      });
+      watcher.once("change", spy);
 
-    var spy = t.mock.fn((filepath) => {
-      console.log(filepath);
-      assert.fail("should never be called");
-    });
-    watcher.once("change", spy);
+      // We default `ignoreInitial` to true, so always wait for `on('ready')`
+      watcher.on("ready", changeFile);
 
-    // We default `ignoreInitial` to true, so always wait for `on('ready')`
-    watcher.on("ready", changeFile);
-
-    setTimeout(function () {
-      assert.strictEqual(spy.mock.callCount(), 0);
-      done();
-    }, 1500);
-  });
+      setTimeout(function () {
+        assert.strictEqual(spy.mock.callCount(), 0);
+        done();
+      }, 1500);
+    },
+  );
 
   it("can re-add a glob after it has been negated", function (t, done) {
     watcher = watch([outGlob, ignoreGlob, singleAdd]);
