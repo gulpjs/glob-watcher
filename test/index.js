@@ -108,81 +108,53 @@ describe("glob-watcher", function () {
     watcher.on("ready", addFile);
   });
 
-  it(
-    "waits for completion before running again",
-    { timeout: 5000 },
-    async function () {
-      const { promise, resolve } = Promise.withResolvers();
+  it("waits for completion before running again", function (t, done) {
+    var spy = t.mock.fn((cb) => cb());
+    spy.mock.mockImplementationOnce((cb) => {
+      setTimeout(function () {
+        cb();
+      }, timeout * 3);
+    });
 
-      let runs = 0;
-      let runsBeforeCompletion;
+    watcher = watch(outGlob, spy);
 
-      watcher = watch(outGlob, function (cb) {
-        runs++;
+    watcher.on("ready", function () {
+      changeFile();
+      setTimeout(changeFile, timeout * 2);
+    });
 
-        if (runs === 1) {
-          setTimeout(function () {
-            runsBeforeCompletion = runs;
-            cb();
-          }, timeout * 3);
-        } else {
-          cb();
-          resolve();
-        }
-      });
-
-      watcher.on("ready", function () {
-        changeFile();
-        setTimeout(changeFile, timeout * 2);
-      });
-
-      await promise;
-
-      assert.strictEqual(runsBeforeCompletion, 1);
-      assert.strictEqual(runs, 2);
-    },
-  );
+    setTimeout(function () {
+      assert.strictEqual(spy.mock.callCount(), 2);
+      done();
+    }, 1000);
+  });
 
   // It can signal completion with anything async-done supports
   // Just wanted to have a smoke test for streams
-  it(
-    "can signal completion with a stream",
-    { timeout: 5000 },
-    async function () {
-      const { promise, resolve } = Promise.withResolvers();
+  it("can signal completion with a stream", function (t, done) {
+    var spy = t.mock.fn((cb) => cb());
+    spy.mock.mockImplementationOnce(() => {
+      var stream = through();
+      setTimeout(function () {
+        stream.end();
+      }, timeout * 3);
+      return stream;
+    });
 
-      let runs = 0;
-      let runsBeforeCompletion;
+    watcher = watch(outGlob, spy);
 
-      watcher = watch(outGlob, function (cb) {
-        runs++;
-        if (runs === 1) {
-          var stream = through();
-          setTimeout(function () {
-            runsBeforeCompletion = runs;
-            stream.end();
-          }, timeout * 3);
-          return stream;
-        }
-        if (runs === 2) {
-          cb();
-          resolve();
-        }
-      });
+    // We default `ignoreInitial` to true, so always wait for `on('ready')`
+    watcher.on("ready", function () {
+      changeFile();
+      // Fire after double the delay
+      setTimeout(changeFile, timeout * 2);
+    });
 
-      // We default `ignoreInitial` to true, so always wait for `on('ready')`
-      watcher.on("ready", function () {
-        changeFile();
-        // Fire after double the delay
-        setTimeout(changeFile, timeout * 2);
-      });
-
-      await promise;
-
-      assert.strictEqual(runsBeforeCompletion, 1);
-      assert.strictEqual(runs, 2);
-    },
-  );
+    setTimeout(function () {
+      assert.strictEqual(spy.mock.callCount(), 2);
+      done();
+    }, 1000);
+  });
 
   it("emits an error if one occurs in the callback and handler attached", function (t, done) {
     var expectedError = new Error("boom");
@@ -212,55 +184,38 @@ describe("glob-watcher", function () {
     watcher.on("ready", changeFile);
   });
 
-  it(
-    "allows the user to disable queueing",
-    { timeout: 5000 },
-    async function () {
-      const { promise, resolve } = Promise.withResolvers();
-
-      let runs = 0;
-
-      watcher = watch(outGlob, { queue: false }, function (cb) {
-        runs++;
-        setTimeout(function () {
-          // Expect 1 because run 2 is never queued
-          cb();
-          resolve();
-        }, timeout * 3);
-      });
-
-      // We default `ignoreInitial` to true, so always wait for `on('ready')`
-      watcher.on("ready", function () {
-        changeFile();
-        // This will never trigger a call because queueing is disabled
-        setTimeout(changeFile, timeout * 2);
-      });
-
-      await promise;
-
-      assert.strictEqual(runs, 1);
-    },
-  );
-
-  it("allows the user to adjust delay", { timeout: 5000 }, async function () {
-    const { promise, resolve } = Promise.withResolvers();
-
-    let runs = 0;
-    let runsBeforeCompletion;
-
-    watcher = watch(outGlob, { delay: timeout / 2 }, function (cb) {
-      runs++;
-      if (runs === 1) {
-        setTimeout(function () {
-          runsBeforeCompletion = runs;
-          cb();
-        }, timeout * 3);
-      }
-      if (runs === 2) {
+  it("allows the user to disable queueing", function (t, done) {
+    var spy = t.mock.fn((cb) => {
+      setTimeout(function () {
         cb();
-        resolve();
-      }
+      }, timeout * 3);
     });
+
+    watcher = watch(outGlob, { queue: false }, spy);
+
+    // We default `ignoreInitial` to true, so always wait for `on('ready')`
+    watcher.on("ready", function () {
+      changeFile();
+      // This will never trigger a call because queueing is disabled
+      setTimeout(changeFile, timeout * 2);
+    });
+
+    setTimeout(function () {
+      // Expect 1 because run 2 is never queued
+      assert.strictEqual(spy.mock.callCount(), 1);
+      done();
+    }, 1000);
+  });
+
+  it("allows the user to adjust delay", function (t, done) {
+    var spy = t.mock.fn((cb) => cb());
+    spy.mock.mockImplementationOnce((cb) => {
+      setTimeout(function () {
+        cb();
+      }, timeout * 3);
+    });
+
+    watcher = watch(outGlob, { delay: timeout / 2 }, spy);
 
     // We default `ignoreInitial` to true, so always wait for `on('ready')`
     watcher.on("ready", function () {
@@ -269,10 +224,10 @@ describe("glob-watcher", function () {
       setTimeout(changeFile, timeout);
     });
 
-    await promise;
-
-    assert.strictEqual(runsBeforeCompletion, 1);
-    assert.strictEqual(runs, 2);
+    setTimeout(function () {
+      assert.strictEqual(spy.mock.callCount(), 2);
+      done();
+    }, 1000);
   });
 
   it("passes options to chokidar", function (t, done) {
