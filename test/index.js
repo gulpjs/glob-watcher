@@ -390,25 +390,33 @@ describe("glob-watcher", function () {
     },
   );
 
-  it("can re-add a relative glob after it has been negated", function (t, done) {
-    watcher = watch(
-      ["fixtures/**/*.js", "!fixtures/changed.js", "fixtures/changed.js"],
-      { cwd: __dirname },
-    );
+  it(
+    "can re-add a relative glob after it has been negated",
+    // Chokidar doesn't handle Windows globs correctly so we can't test this
+    { skip: isWindows },
+    function (t, done) {
+      watcher = watch(
+        ["fixtures/**/*.js", "!fixtures/changed.js", "fixtures/changed.js"],
+        { cwd: __dirname },
+      );
 
-    var spy = t.mock.fn(() => {});
+      var spy = t.mock.fn(() => {});
 
-    watcher.once("change", spy);
+      watcher.once("change", spy);
 
-    // We default `ignoreInitial` to true, so always wait for `on('ready')`
-    watcher.on("ready", changeFile);
+      // We default `ignoreInitial` to true, so always wait for `on('ready')`
+      watcher.on("ready", changeFile);
 
-    setTimeout(function () {
-      assert.strictEqual(spy.mock.callCount(), 1);
-      assert.strictEqual(spy.mock.calls[0].arguments[0], "fixtures/changed.js");
-      done();
-    }, 1500);
-  });
+      setTimeout(function () {
+        assert.strictEqual(spy.mock.callCount(), 1);
+        assert.strictEqual(
+          spy.mock.calls[0].arguments[0],
+          "fixtures/changed.js",
+        );
+        done();
+      }, 1000);
+    },
+  );
 
   it(
     "can re-add a glob after it has been negated (unix style absolute paths)",
