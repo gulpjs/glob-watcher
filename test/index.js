@@ -24,7 +24,7 @@ describe("glob-watcher", function () {
   var globPattern = "**/*.js";
   var outGlob = path.posix.join(outDir, globPattern);
   var singleAdd = path.posix.join(outDir, "changed.js");
-  var ignoreGlob = "!" + singleAdd;
+  var ignoreGlob = "!" + path.posix.join(outDir, "*.js");
 
   function changeFile() {
     fs.writeFileSync(outFile1, "hello changed");
@@ -337,7 +337,7 @@ describe("glob-watcher", function () {
 
   it("can ignore a glob after it has been added", function (t, done) {
     console.log(outGlob, ignoreGlob);
-    watcher = watch([outGlob, ignoreGlob], { cwd: dirname });
+    watcher = watch([outGlob, ignoreGlob]);
 
     console.log(watcher._getGlobIgnored());
 
