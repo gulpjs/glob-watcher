@@ -296,44 +296,35 @@ describe("glob-watcher", function () {
   });
 
   it("watches exactly the given event", function (t, done) {
-    var spy = t.mock.fn(function (cb) {
-      cb();
+    var spy = t.mock.fn((cb) => {
       changeFile();
-      setTimeout(function () {
-        try {
-          assert.strictEqual(spy.mock.callCount(), 1);
-          done();
-        } catch (err) {
-          done(err);
-        }
-      }, 500);
+      cb();
     });
 
     watcher = watch(outGlob, { events: "add" }, spy);
 
     watcher.on("ready", addFile);
+
+    setTimeout(function () {
+      assert.strictEqual(spy.mock.callCount(), 1);
+      done();
+    }, 1000);
   });
 
-  it("accepts multiple events to watch", { timeout: 1000 }, function (t, done) {
-    //t.mock.fn doesn't get called correctly, simpler to use a anonymous function
-    let calls = 0;
+  it("accepts multiple events to watch", function (t, done) {
+    var spy = t.mock.fn((cb) => cb());
 
-    function callback(cb) {
-      cb();
-
-      calls++;
-
-      if (calls === 2) {
-        done();
-      }
-    }
-
-    watcher = watch(outGlob, { events: ["add", "change"] }, callback);
+    watcher = watch(outGlob, { events: ["add", "change"] }, spy);
 
     watcher.on("ready", addFile);
     watcher.on("add", function () {
       setTimeout(changeFile, 500);
     });
+
+    setTimeout(function () {
+      assert.strictEqual(spy.mock.callCount(), 2);
+      done();
+    }, 1000);
   });
 
   it(
@@ -343,8 +334,7 @@ describe("glob-watcher", function () {
     function (t, done) {
       watcher = watch([outGlob, ignoreGlob]);
 
-      var spy = t.mock.fn((filepath) => {
-        console.log(filepath);
+      var spy = t.mock.fn(() => {
         assert.fail("should never be called");
       });
       watcher.once("change", spy);
@@ -355,38 +345,96 @@ describe("glob-watcher", function () {
       setTimeout(function () {
         assert.strictEqual(spy.mock.callCount(), 0);
         done();
-      }, 1500);
+      }, 1000);
     },
   );
 
-  it("can re-add a glob after it has been negated", function (t, done) {
-    watcher = watch([outGlob, ignoreGlob, singleAdd]);
-
-    watcher.once("change", function (filepath) {
-      assert.deepStrictEqual(filepath, singleAdd);
-      done();
+  it("can ignore a relative glob after it has been added", function (t, done) {
+    watcher = watch(["fixtures/**/*.js", "!fixtures/changed.js"], {
+      cwd: __dirname,
     });
+
+    var spy = t.mock.fn(() => {
+      assert.fail("should never be called");
+    });
+    watcher.once("change", spy);
 
     // We default `ignoreInitial` to true, so always wait for `on('ready')`
     watcher.on("ready", changeFile);
+
+    setTimeout(function () {
+      assert.strictEqual(spy.mock.callCount(), 0);
+      done();
+    }, 1000);
   });
 
-  it("can re-add a glob after it has been negated (unix style path)", function (t, done) {
-    watcher = watch([
-      normalizePath(outGlob),
-      normalizePath(ignoreGlob),
-      normalizePath(singleAdd),
-    ]);
+  it(
+    "can re-add a glob after it has been negated",
+    // Chokidar doesn't normalize absolute Windows globs correctly so we can't test this
+    { skip: isWindows },
+    function (t, done) {
+      watcher = watch([outGlob, ignoreGlob, singleAdd]);
 
-    watcher.once("change", function (filepath) {
-      // chokidar pass windows style path on windows.
-      assert.deepStrictEqual(filepath, singleAdd);
-      done();
-    });
+      var spy = t.mock.fn(() => {});
+
+      watcher.once("change", spy);
+
+      // We default `ignoreInitial` to true, so always wait for `on('ready')`
+      watcher.on("ready", changeFile);
+
+      setTimeout(function () {
+        assert.strictEqual(spy.mock.callCount(), 1);
+        assert.strictEqual(spy.mock.calls[0].arguments[0], singleAdd);
+        done();
+      }, 1000);
+    },
+  );
+
+  it("can re-add a relative glob after it has been negated", function (t, done) {
+    watcher = watch(
+      ["fixtures/**/*.js", "!fixtures/changed.js", "fixtures/changed.js"],
+      { cwd: __dirname },
+    );
+
+    var spy = t.mock.fn(() => {});
+
+    watcher.once("change", spy);
 
     // We default `ignoreInitial` to true, so always wait for `on('ready')`
     watcher.on("ready", changeFile);
+
+    setTimeout(function () {
+      assert.strictEqual(spy.mock.callCount(), 1);
+      assert.strictEqual(spy.mock.calls[0].arguments[0], "fixtures/changed.js");
+      done();
+    }, 1000);
   });
+
+  it(
+    "can re-add a glob after it has been negated (unix style absolute paths)",
+    // Chokidar doesn't normalize absolute Windows globs correctly so we can't test this
+    { skip: isWindows },
+    function (t, done) {
+      watcher = watch([
+        normalizePath(outGlob),
+        normalizePath(ignoreGlob),
+        normalizePath(singleAdd),
+      ]);
+
+      var spy = t.mock.fn(() => {});
+
+      watcher.once("change", spy);
+
+      // We default `ignoreInitial` to true, so always wait for `on('ready')`
+      watcher.on("ready", changeFile);
+
+      setTimeout(function () {
+        assert.strictEqual(spy.mock.callCount(), 1);
+        assert.strictEqual(spy.mock.calls[0].arguments[0], singleAdd);
+        done();
+      }, 1000);
+    },
+  );
 
   it("does not mutate the globs array", function (t, done) {
     var globs = [outGlob, ignoreGlob, singleAdd];
