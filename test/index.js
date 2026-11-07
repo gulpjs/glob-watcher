@@ -17,7 +17,7 @@ var timeout = 200;
 describe("glob-watcher", function () {
   var watcher;
 
-  var dirname = path.posix.normalize(__dirname);
+  var dirname = normalizePath(__dirname);
   var outDir = path.posix.join(dirname, "./fixtures/");
   var outFile1 = path.posix.join(outDir, "changed.js");
   var outFile2 = path.posix.join(outDir, "added.js");
